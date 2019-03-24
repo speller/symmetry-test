@@ -71,7 +71,7 @@ class WebSocketServer {
         }
       })
       ws.on('close', ws => {
-        console.log(`Client disconnected`)
+        console.log('Client disconnected')
         this.connections = this.connections.filter(con => con.connectionId !== connectionId)
       })
 
@@ -166,6 +166,16 @@ class WebSocketServer {
   getConnectionUserId(connectionId) {
     const con = this.findConnection(connectionId)
     return con ? con.userId : null
+  }
+
+  /**
+   * Returns connections by user id
+   * @returns {*}
+   * @param userId
+   */
+  getConnectionByUserId(userId) {
+    return this.connections
+      .filter(connection => connection.userId === userId)
   }
 }
 

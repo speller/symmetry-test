@@ -46,7 +46,7 @@ class Message extends Component {
     const time = msg.time ? new Date(msg.time) : null
     const deleteInProgress = props.deleteInProgress && this.state.deleteInProgress
     return (
-      <Paper className="message">
+      <Paper className={`message ${msg.isDirectMessage ? 'direct' : ''}`}>
         <div className="header">
           <Typography
             className="author"
@@ -55,6 +55,9 @@ class Message extends Component {
             gutterBottom
           >
             {msg.userName ?? 'Unknown'}
+            {msg.isDirectMessage &&
+            <span>&#32;> <span style={{color: msg.recipientUserColor}}>{msg.recipientName}</span>
+            </span>}
           </Typography>
           <Typography
             className="time"
