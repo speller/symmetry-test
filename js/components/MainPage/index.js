@@ -14,13 +14,15 @@ class MainPage extends Component {
   }
   
   componentDidMount() {
-    this.doLoadData()    
+    // this.doLoadData()
   }
   
   render() {
     return (
       <div className="main-page">
-        <Paper className="paper" />
+        <Paper className="paper">
+          Main page content
+        </Paper>
       </div>
     )
   }

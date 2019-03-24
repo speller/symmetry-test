@@ -3,14 +3,12 @@ import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import './styles.scss'
 import { Avatar, Button, FormControl, Input, InputLabel, LinearProgress, Paper, Typography } from '@material-ui/core'
-import { MODE_LOGIN } from './constants'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { goToMainPage, startLogin, startRegister } from './actions'
 
 class LoginForm extends Component {
 
   static propTypes = {
-    mode: PropTypes.string.isRequired,
     inProgress: PropTypes.bool,
   }
   
@@ -19,27 +17,23 @@ class LoginForm extends Component {
   }
   
   state = {
-    email: '',
+    name: '',
     password: '',
   }
   
   handleSubmit(event) {
     event.preventDefault()
-    if (this.props.mode === MODE_LOGIN) {
-      this.props.startLogin(this.state.email, this.state.password)
-    } else {
-      this.props.startRegister(this.state.email, this.state.password)
-    }
+    this.props.startLogin(this.state.name, this.state.password)
   }
   
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps, prevState, snapshot) {
     const props = this.props
     if (props.loggedIn && prevProps.loggedIn !== props.loggedIn) {
       props.goToMainPage()
     }
   }
 
-  render () {
+  render() {
     const props = this.props
     
     return (
@@ -49,19 +43,19 @@ class LoginForm extends Component {
             <FontAwesomeIcon icon="lock" />
           </Avatar>
           <Typography component="h1" variant="h5">
-            {props.mode === MODE_LOGIN ? 'Login' : 'Register'}
+            Login
           </Typography>
           <form className="form" onSubmit={event => this.handleSubmit(event)}>
             <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="email">Email Address</InputLabel>
+              <InputLabel htmlFor="email">Name</InputLabel>
               <Input 
-                id="email" 
+                id="name"
                 name="email" 
                 autoComplete="email" 
                 autoFocus 
                 disabled={props.inProgress} 
-                value={this.state.email}
-                onChange={(e) => this.setState({email: e.target.value})}
+                value={this.state.name}
+                onChange={(e) => this.setState({name: e.target.value})}
               />
             </FormControl>
             <FormControl margin="normal" required fullWidth>
@@ -84,7 +78,7 @@ class LoginForm extends Component {
               className="submit"
               disabled={props.inProgress}
             >
-              {props.mode === MODE_LOGIN ? 'Login' : 'Register'}
+              Login
             </Button>
             {props.inProgress && 
               <LinearProgress />}
@@ -104,10 +98,8 @@ export default connect(
   // Add actions methods to our component props
   (dispatch) => {
     return {
-      startLogin: (email, password) => 
-        dispatch(startLogin(email, password)),
-      startRegister: (email, password) => 
-        dispatch(startRegister(email, password)),
+      startLogin: (name, password) =>
+        dispatch(startLogin(name, password)),
       goToMainPage: () =>
         dispatch(goToMainPage()),
     }

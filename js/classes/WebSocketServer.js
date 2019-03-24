@@ -23,14 +23,11 @@ class WebSocketServer {
           zlibInflateOptions: {
             chunkSize: 10 * 1024,
           },
-          // Other options settable:
-          clientNoContextTakeover: true, // Defaults to negotiated value.
-          serverNoContextTakeover: true, // Defaults to negotiated value.
-          serverMaxWindowBits: 10, // Defaults to negotiated value.
-          // Below options specified as default values.
-          concurrencyLimit: 10, // Limits zlib concurrency for perf.
-          threshold: 1024, // Size (in bytes) below which messages
-          // should not be compressed.
+          clientNoContextTakeover: true,
+          serverNoContextTakeover: true,
+          serverMaxWindowBits: 10,
+          concurrencyLimit: 10,
+          threshold: 1024,
         },
       },
       () => {
@@ -38,12 +35,22 @@ class WebSocketServer {
       }
     )
 
-    wss.on('connection', function(ws) {
-      ws.on('message', function(message) {
+    wss.on('connection', ws => {
+      console.log('Client connected')
+      ws.on('message', message => {
         console.log('received: %s', message)
+        let response
+        try {
+          let msg = JSON.parse(message)
+          response = this.commandProcessor.processCommand(msg)
+        } catch (e) {
+          console.log('Can not parse JSON')
+        }
+        if (response) {
+          ws.send(JSON.stringify(response))
+        }
       })
-
-      ws.send('something')
+      ws.send('connected')
     })
   }
 }

@@ -1,26 +1,16 @@
-import { ACTION_LOGIN, ACTION_REGISTER, ACTION_SET_PAGE, PAGE_MAIN } from '../Root/constants'
+import { ACTION_LOGIN, ACTION_SET_PAGE, PAGE_MAIN } from '../Root/constants'
 
-export function startLogin(email, password) {
+export function startLogin(name, password) {
   return {
     type: ACTION_LOGIN,
     payload: {
-      email,
+      name,
       password,
-    }
+    },
   }
 }
 
-export function startRegister(email, password) {
-  return {
-    type: ACTION_REGISTER,
-    payload: {
-      email,
-      password,
-    }
-  }
-}
-
-export function goToMainPage () {
+export function goToMainPage() {
   return {
     type: ACTION_SET_PAGE,
     payload: PAGE_MAIN,

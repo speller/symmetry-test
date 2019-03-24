@@ -3,6 +3,8 @@ const webpack = require('webpack')
 
 const TerserPlugin = require('terser-webpack-plugin')
 
+const isDevServer = process.argv.find(v => v.includes('webpack-dev-server'))
+
 module.exports = (env, argv) => {
   const webpackMode = argv.mode || 'development'
   const appTarget = env.APP_TARGET || 'dev'
@@ -29,6 +31,7 @@ module.exports = (env, argv) => {
     // Dev mode web server config
     devServer: {
       inline: true,
+      hot: true,
       port: 8083,
       host: '0.0.0.0',
       publicPath: '/build',
@@ -117,7 +120,6 @@ module.exports = (env, argv) => {
     ],
   }
 
-
-
-  return [config, serverConfig]
+  // Dev server don't want to reload pages if a node configuration returned
+  return isDevServer ? config : [config, serverConfig]
 }

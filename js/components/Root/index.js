@@ -1,62 +1,62 @@
 import 'regenerator-runtime/runtime'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { AppBar, Button, CssBaseline, LinearProgress, Toolbar, Typography } from '@material-ui/core'
+import {
+  AppBar,
+  Button,
+  CssBaseline,
+  LinearProgress,
+  Toolbar,
+  Typography,
+} from '@material-ui/core'
 import './styles.scss'
 import LoginForm from '../LoginForm'
-import { PAGE_LOGIN, PAGE_MAIN, PAGE_REGISTER } from './constants'
-import { checkLoginStatus, logout, showLoginPage, showMainPage, showRegisterPage } from './actions'
-import { MODE_LOGIN, MODE_REGISTER } from '../LoginForm/constants'
+import { PAGE_LOGIN, PAGE_MAIN } from './constants'
+import { logout, showLoginPage } from './actions'
 import MainPage from '../MainPage'
+import Websocket from 'react-websocket'
+import config from '../../config'
 
 class Root extends Component {
   
   static defaultProps = {
     page: PAGE_MAIN,
     currentLogin: null,
-    shouldCheckLogin: true,
     initialized: false,
-    loginCheckInProgress: false,
     logoutInProgress: false,
   }
   
   isInProgress() {
-    return this.props.loginCheckInProgress || this.props.logoutInProgress; 
+    return this.props.logoutInProgress
+  }
+
+  handleWsData(data) {
+    console.log(data)
+    // let result = JSON.parse(data)
+    // this.setState({ count: this.state.count + result.movement })
   }
   
-  shouldCheckLogin() {
-    return this.props.shouldCheckLogin && !this.props.loginCheckInProgress
-  }
-  
-  canShowContent() {
-    return this.props.initialized;
-  }
-  
-  componentDidMount () {
-    if (this.shouldCheckLogin()) {
-      this.props.checkLoginStatus()
+  componentDidMount() {
+    if (!this.currentLogin && !this.isInProgress()) {
+      this.props.showLoginPage()
     }
   }
 
-  render () {
-    const props = this.props;
+  render() {
+    const props = this.props
     
     const isInProgress = this.isInProgress() || props.shouldCheckLogin
     const isLoggedIn = !!props.currentLogin
-    const canShowContent = this.canShowContent()
-    
+
     return (
       <div className="app-root">
         <CssBaseline />
         <AppBar position="static" color="default" className="app-bar">
           <Toolbar className="toolbar-title">
             <Typography variant="h6" color="inherit" noWrap className="title">
-              Property Transactions
+              Test Assignment Chat
             </Typography>
-            <Button className="main-link">
-              Main Page
-            </Button>
-            {!isLoggedIn && 
+            {!isLoggedIn &&
             <Button 
               color="primary" 
               variant="outlined" 
@@ -66,16 +66,7 @@ class Root extends Component {
             >
               Login
             </Button>}
-            {!isLoggedIn && 
-            <Button 
-              color="primary" 
-              variant="outlined" 
-              onClick={props.showRegisterPage}
-              disabled={isInProgress}
-            >
-              Register
-            </Button>}
-            {isLoggedIn && 
+            {isLoggedIn &&
             <Button 
               color="primary" 
               variant="outlined" 
@@ -89,16 +80,17 @@ class Root extends Component {
         {isInProgress &&
         <LinearProgress />}
         <main className="layout">
-          {canShowContent && props.page === PAGE_REGISTER &&
-            <LoginForm mode={MODE_REGISTER}/>
+          {props.page === PAGE_LOGIN &&
+            <LoginForm />
           }
-          {canShowContent && props.page === PAGE_LOGIN &&
-            <LoginForm mode={MODE_LOGIN}/>
-          }
-          {canShowContent && props.page === PAGE_MAIN && isLoggedIn &&
+          {props.page === PAGE_MAIN && isLoggedIn &&
             <MainPage />
           }
         </main>
+        <Websocket 
+          url={config.ws_url}
+          onMessage={this.handleWsData.bind(this)}
+        />
       </div>
     )
   }
@@ -114,9 +106,6 @@ export default connect(
   (dispatch) => {
     return {
       showLoginPage: () => dispatch(showLoginPage()),
-      showRegisterPage: () => dispatch(showRegisterPage()),
-      showMainPage: () => dispatch(showMainPage()),
-      checkLoginStatus: () => dispatch(checkLoginStatus()),
       logout: () => dispatch(logout()),
     }
   },
