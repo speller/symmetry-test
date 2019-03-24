@@ -1,4 +1,5 @@
 import {
+  ACTION_CLEAR_CHAT,
   ACTION_DELETE_MESSAGE,
   ACTION_DISPATCH_MESSAGE,
   ACTION_LOGIN,
@@ -87,6 +88,13 @@ export function logout(ws) {
 export function disconnected(context) {
   return {
     type: ACTION_LOGOUT_SUCCESS,
+    context,
+  }
+}
+
+export function clearChat(context) {
+  return {
+    type: ACTION_CLEAR_CHAT,
     context,
   }
 }
