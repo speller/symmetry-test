@@ -25,7 +25,14 @@ class Root extends Component {
     initialized: false,
     logoutInProgress: false,
   }
-  
+
+  webSocketRef
+
+  constructor(props) {
+    super(props)
+    this.webSocketRef = React.createRef()
+  }
+
   isInProgress() {
     return this.props.logoutInProgress
   }
@@ -49,6 +56,10 @@ class Root extends Component {
     if (!this.currentUser && !this.isInProgress()) {
       this.props.showLoginPage()
     }
+  }
+
+  componentWillUnmount() {
+    this.webSocketRef = null
   }
 
   render() {
@@ -86,6 +97,12 @@ class Root extends Component {
             </Button>}
           </Toolbar>
         </AppBar>
+        {isLoggedIn &&
+        <Websocket
+          ref={this.webSocketRef}
+          url={config.client.ws_url}
+          onMessage={this.handleWsData.bind(this)}
+        />}
         {isInProgress &&
         <LinearProgress />}
         <main className="layout">
@@ -93,14 +110,9 @@ class Root extends Component {
             <LoginForm />
           }
           {props.page === PAGE_MAIN && isLoggedIn &&
-            <MainPage />
+            <MainPage webSocket={this.webSocketRef.current} user={props.currentUser} />
           }
         </main>
-        {isLoggedIn &&
-        <Websocket 
-          url={config.client.ws_url}
-          onMessage={this.handleWsData.bind(this)}
-        />}
       </div>
     )
   }

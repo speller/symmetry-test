@@ -1,13 +1,12 @@
-import { ACTION_LOAD_DATA } from './constants'
+import { ACTION_SEND_MESSAGE } from './constants'
 
-export function loadData (from, to, prefCode, cityCode) {
+export function sendMessage(text, userId, ws) {
   return {
-    type: ACTION_LOAD_DATA,
+    type: ACTION_SEND_MESSAGE,
     payload: {
-      from,
-      to,
-      prefCode,
-      cityCode
-    }
+      userId,
+      text,
+    },
+    ws,
   }
 }

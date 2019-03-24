@@ -31,7 +31,6 @@ module.exports = (env, argv) => {
     // Dev mode web server config
     devServer: {
       inline: true,
-      hot: true,
       port: 8083,
       host: '0.0.0.0',
       publicPath: '/build',

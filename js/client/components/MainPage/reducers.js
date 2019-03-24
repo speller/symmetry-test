@@ -1,28 +1,33 @@
-import { ACTION_LOAD_DATA, ACTION_LOAD_DATA_FAIL, ACTION_LOAD_DATA_SUCCESS } from './constants'
+import {
+  ACTION_SEND_MESSAGE,
+  ACTION_SEND_MESSAGE_FAIL,
+  ACTION_SEND_MESSAGE_SUCCESS,
+} from './constants'
 
 export default function(state = {}, action) {
   switch (action.type) {
-    case ACTION_LOAD_DATA:
-      return {
-        ...state,
-        inProgress: true,
-      }
-      
-    case ACTION_LOAD_DATA_SUCCESS: {
-      return {
-        inProgress: false,
-        rows: action.payload,
-      }  
+  case ACTION_SEND_MESSAGE: {
+    return {
+      inProgress: true,
+      messageSentSuccess: false,
     }
+  }
     
-    case ACTION_LOAD_DATA_FAIL: {
-      alert("Load data fail: " + action.payload.message)
-      return {
-        inProgress: false,
-      }  
+  case ACTION_SEND_MESSAGE_SUCCESS: {
+    return {
+      inProgress: false,
+      messageSentSuccess: true,
     }
-    
-    default:
-      return {...state}
+  }
+
+  case ACTION_SEND_MESSAGE_FAIL: {
+    alert('Send message fail: ' + action.payload.message)
+    return {
+      inProgress: false,
+    }
+  }
+
+  default:
+    return {...state}
   }
 }

@@ -1,39 +1,29 @@
-import { call, put, takeLatest } from 'redux-saga/dist/redux-saga-effects-npm-proxy.esm'
-import axios from 'axios/index'
+import { call, put, takeLatest, delay } from 'redux-saga/dist/redux-saga-effects-npm-proxy.esm'
 import { putFailAction } from '../Root/utils'
-import { ACTION_LOAD_DATA, ACTION_LOAD_DATA_FAIL, ACTION_LOAD_DATA_SUCCESS } from './constants'
-import { BASE_URL } from '../Root/constants'
+import {
+  ACTION_SEND_MESSAGE,
+  ACTION_SEND_MESSAGE_FAIL,
+  ACTION_SEND_MESSAGE_SUCCESS,
+} from './constants'
 
-function * getDataWorker(action) {
+function * sendMessageWorker(action) {
   try {
-    const payload = action.payload
-    const response = yield call(
-      axios,
-      {
-        url: '/PropertyTransaction/GetTransactions',
-        baseURL: BASE_URL,
-        method: 'post',
-        withCredentials: true,
-        data: {...action.payload},
-      }
+    yield call(
+      [action.ws, 'sendMessage'],
+      JSON.stringify(action.payload)
     )
-    const result = response.data
-    if (result && result.success) {
-      yield put({
-        type: ACTION_LOAD_DATA_SUCCESS,
-        payload: result.data,
-      })
-    } else {
-      yield putFailAction(ACTION_LOAD_DATA_FAIL, {message: result.reason ?? 'unknown error'})
-    }
+    yield delay(300)
+    yield put({
+      type: ACTION_SEND_MESSAGE_SUCCESS,
+    })
   } catch (e) {
-    yield putFailAction(ACTION_LOAD_DATA_FAIL, e)
+    yield putFailAction(ACTION_SEND_MESSAGE_FAIL, e)
   }
 }
 
 
 export default [
   function * () {
-    yield takeLatest(ACTION_LOAD_DATA, getDataWorker)
+    yield takeLatest(ACTION_SEND_MESSAGE, sendMessageWorker)
   },
 ]
