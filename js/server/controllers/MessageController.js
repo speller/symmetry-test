@@ -4,6 +4,7 @@ import {
   MESSAGE_TYPE_TEXT,
 } from '../../common/constants'
 import BaseController from './BaseController'
+import { getColorByUserId } from '../utils'
 
 /**
  * Controller for chat message commands
@@ -45,6 +46,7 @@ class MessageController extends BaseController {
           text: msg.text,
           time: msg.timestamp,
           messageId: msg.id,
+          userColor: getColorByUserId(user.id),
         }
       )
     }
@@ -58,12 +60,11 @@ class MessageController extends BaseController {
   async deleteMessageAction(request) {
     const { data, connectionId, server } = request
     const sendErrorMessage = text => {
-      server.sendMessage(
+      this.sendError(
+        server,
         connectionId,
-        {
-          type: MESSAGE_TYPE_DELETE_MESSAGE_FAIL,
-          message: text,
-        }
+        MESSAGE_TYPE_DELETE_MESSAGE_FAIL,
+        text
       )
     }
 
