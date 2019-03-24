@@ -119,6 +119,12 @@ class SqlMessageProvider extends BaseProvider{
     return rows
   }
 
+  /**
+   * Mark specified message as deleted
+   * @param id
+   * @param userId
+   * @returns {Promise<void>}
+   */
   async markMessageDeleted(id, userId) {
     await this.connection.query(
       'UPDATE messages SET deleted_by_user_id = ? WHERE id = ?',

@@ -5,6 +5,9 @@ import {
   MESSAGE_TYPE_SEND_EMAIL_SUCCESS,
 } from '../../common/constants'
 
+/**
+ * Send email with chat history controller
+ */
 class EmailController extends BaseController {
   userProvider
   messageProvider
@@ -15,6 +18,11 @@ class EmailController extends BaseController {
     this.messageProvider = messageProvider
   }
 
+  /**
+   * Process send email command
+   * @param request
+   * @returns {Promise<void>}
+   */
   async sendEmailHistoryAction(request) {
     const { data, connectionId, server } = request
     const sendErrorMessage = text => {

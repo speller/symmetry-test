@@ -24,6 +24,7 @@ module.exports = (env, argv) => {
   }
   const serverEntries = {
     'server': './js/server.js',
+    'test': './test/test.js',
   }
 
   let config = {

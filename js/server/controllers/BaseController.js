@@ -1,5 +1,8 @@
 import { MESSAGE_TYPE_TEXT } from '../../common/constants'
 
+/**
+ * Base controller class with common utilities
+ */
 class BaseController {
   sendError(server, connectionId, type, message) {
     server.sendMessage(

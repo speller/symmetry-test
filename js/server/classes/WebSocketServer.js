@@ -3,6 +3,9 @@ import { MESSAGE_TYPE_TEXT } from '../../common/constants'
 import { makeRandomId } from '../../common/utils'
 import isPlainObject from 'lodash-es/isPlainObject'
 
+/**
+ * Web socket server 
+ */
 class WebSocketServer {
 
   router
@@ -14,6 +17,9 @@ class WebSocketServer {
     this.router = commandProcessor
   }
 
+  /**
+   * Run web socket server
+   */
   run() {
     const cfg = this.config
     const port = cfg.port || 12345
