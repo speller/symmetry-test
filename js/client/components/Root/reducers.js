@@ -1,4 +1,5 @@
 import {
+  ACTION_INCOMING_MESSAGE,
   ACTION_LOGIN_FAIL,
   ACTION_LOGIN_SUCCESS,
   ACTION_LOGOUT,
@@ -6,9 +7,18 @@ import {
   ACTION_LOGOUT_SUCCESS,
   ACTION_SET_PAGE,
 } from './constants'
+import ChatContext from './chat-context'
 
 export default function(state = {}, action) {
   switch (action.type) {
+  case ACTION_INCOMING_MESSAGE:
+    const context = ChatContext.clone(action.context)
+    context.messages.push(action.payload)
+    return {
+      ...state,
+      chatContext: context,
+    }
+
   case ACTION_SET_PAGE:
     return {
       ...state,
@@ -16,9 +26,11 @@ export default function(state = {}, action) {
     }
     
   case ACTION_LOGIN_SUCCESS:
+    const context1 = ChatContext.clone(action.context)
+    context1.user = action.payload.user
     return {
       ...state,
-      currentUser: action.payload,
+      chatContext: context1,
     }
 
   case ACTION_LOGIN_FAIL:
@@ -34,10 +46,11 @@ export default function(state = {}, action) {
     }
 
   case ACTION_LOGOUT_SUCCESS:
+    const context2 = ChatContext.clone(action.context)
+    context2.user = null
     return {
       ...state,
-      logoutInProgress: false,
-      currentUser: null,
+      chatContext: context2,
     }
 
   case ACTION_LOGOUT_FAIL:

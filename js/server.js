@@ -1,7 +1,7 @@
 import config from './config'
 import DefaultController from './server/controllers/DefaultController'
 import LoginController from './server/controllers/LoginController'
-import { MESSAGE_TYPE_TEXT } from './common/constants'
+import { MESSAGE_TYPE_LOGIN, MESSAGE_TYPE_TEXT } from './common/constants'
 import Container from './server/classes/Container'
 
 
@@ -16,7 +16,6 @@ container.setParameter(
     port: config.server.ws_port,
   }
 )
-
 container.setParameter(
   'api_config',
   {
@@ -24,17 +23,20 @@ container.setParameter(
     port: config.server.api_port,
   }
 )
+container.setParameter(
+  'mysql_config',
+  config.server.mysql
+)
 
 const apiRouter = container.get('ApiRouter')
 const chatRouter = container.get('ChatRouter')
 
 // Setup WebSocket routes
 chatRouter.addCommand(MESSAGE_TYPE_TEXT, ['MessageController', 'messageAction'])
+chatRouter.addCommand(MESSAGE_TYPE_LOGIN, ['LoginController', 'loginAction'])
 
 // Setup API server routes
 apiRouter.get('/', DefaultController.default)
-apiRouter.post('/login', LoginController.login)
-apiRouter.options('/login', LoginController.loginOptions)
 
 // Run servers
 container.get('ApiServer').run()

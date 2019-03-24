@@ -4,6 +4,7 @@
 import { MESSAGE_TYPE_TEXT } from '../../common/constants'
 
 class MessageController {
+  _clearRefOnExit = true
   messageProvider
   userProvider
 
@@ -12,13 +13,17 @@ class MessageController {
     this.messageProvider = messageProvider
   }
 
-  messageAction(data) {
-    return {
-      type: MESSAGE_TYPE_TEXT,
-      userId: data.userId,
-      userName: 'John Doe',
-      text: data.text,
-    }
+  messageAction(request) {
+    const { data, connectionId, server } = request
+    server.sendMessage(
+      connectionId,
+      {
+        type: MESSAGE_TYPE_TEXT,
+        userId: data.userId,
+        userName: 'John Doe',
+        text: data.text,
+      }
+    )
   }
 }
 

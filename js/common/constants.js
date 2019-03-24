@@ -1,1 +1,7 @@
+export const MESSAGE_TYPE_LOGIN = 'login'
+export const MESSAGE_TYPE_LOGIN_SUCCESS = 'login_success'
+export const MESSAGE_TYPE_LOGIN_FAIL = 'login_fail'
+export const MESSAGE_TYPE_LOGOUT = 'logout'
+export const MESSAGE_TYPE_LOGOUT_SUCCESS = 'logout_success'
+export const MESSAGE_TYPE_LOGOUT_FAIL = 'logout_fail'
 export const MESSAGE_TYPE_TEXT = 'text'

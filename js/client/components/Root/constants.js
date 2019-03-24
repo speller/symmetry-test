@@ -1,7 +1,7 @@
-import config from '../../../config'
-
 export const PAGE_LOGIN = 'login'
 export const PAGE_MAIN = 'main'
+
+export const ACTION_DISPATCH_MESSAGE = 'ACTION_DISPATCH_MESSAGE'
 
 export const ACTION_SET_PAGE = 'ACTION_SHOW_LOGIN'
 
@@ -13,5 +13,8 @@ export const ACTION_LOGOUT = 'ACTION_LOGOUT'
 export const ACTION_LOGOUT_SUCCESS = 'ACTION_LOGOUT_SUCCESS'
 export const ACTION_LOGOUT_FAIL = 'ACTION_LOGOUT_FAIL'
 
-export const BASE_URL = config.api_url
-export const sssssBASE_URL = config.api_url
+export const ACTION_SEND_MESSAGE = 'ACTION_SEND_MESSAGE'
+export const ACTION_SEND_MESSAGE_SUCCESS = 'ACTION_SEND_MESSAGE_SUCCESS'
+export const ACTION_SEND_MESSAGE_FAIL = 'ACTION_SEND_MESSAGE_FAIL'
+
+export const ACTION_INCOMING_MESSAGE = 'ACTION_INCOMING_MESSAGE'

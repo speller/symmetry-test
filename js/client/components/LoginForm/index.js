@@ -2,23 +2,22 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import './styles.scss'
-import {
-  Avatar,
-  Button,
-  FormControl,
-  Input,
-  InputLabel,
-  LinearProgress,
-  Paper,
-  Typography,
-} from '@material-ui/core'
+import Avatar from '@material-ui/core/Avatar'
+import Button from '@material-ui/core/Button'
+import FormControl from '@material-ui/core/FormControl'
+import Input from '@material-ui/core/Input'
+import InputLabel from '@material-ui/core/InputLabel'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { goToMainPage, startLogin } from './actions'
+import { goToMainPage } from './actions'
 
 class LoginForm extends Component {
 
   static propTypes = {
     inProgress: PropTypes.bool,
+    loginProc: PropTypes.func.isRequired,
   }
   
   static defaultProps = {
@@ -26,13 +25,13 @@ class LoginForm extends Component {
   }
   
   state = {
-    name: '',
+    login: '',
     password: '',
   }
   
   handleSubmit(event) {
     event.preventDefault()
-    this.props.startLogin(this.state.name, this.state.password)
+    this.props.loginProc(this.state.login, this.state.password)
   }
   
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -56,15 +55,15 @@ class LoginForm extends Component {
           </Typography>
           <form className="form" onSubmit={event => this.handleSubmit(event)}>
             <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="email">Name</InputLabel>
+              <InputLabel htmlFor="email">Login</InputLabel>
               <Input 
-                id="name"
-                name="email" 
-                autoComplete="email" 
+                id="login"
+                name="login"
+                autoComplete="Login"
                 autoFocus 
                 disabled={props.inProgress} 
-                value={this.state.name}
-                onChange={(e) => this.setState({name: e.target.value})}
+                value={this.state.login}
+                onChange={(e) => this.setState({login: e.target.value})}
               />
             </FormControl>
             <FormControl margin="normal" required fullWidth>
@@ -107,8 +106,6 @@ export default connect(
   // Add actions methods to our component props
   (dispatch) => {
     return {
-      startLogin: (name, password) =>
-        dispatch(startLogin(name, password)),
       goToMainPage: () =>
         dispatch(goToMainPage()),
     }

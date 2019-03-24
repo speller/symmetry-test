@@ -2,10 +2,12 @@ import MessageController from '../controllers/MessageController'
 import SqlMessageProvider from './SqlMessageProvider'
 import isFunction from 'lodash-es/isFunction'
 import ChatRouter from './ChatRouter'
-import Router from './Router'
+import ApiRouter from './ApiRouter'
 import WebSocketServer from './WebSocketServer'
 import ApiServer from './ApiServer'
 import SqlUserProvider from './SqlUserProvider'
+import MySQL from './MySQL'
+import LoginController from '../controllers/LoginController'
 
 /**
  * Very simple dependency container
@@ -32,20 +34,50 @@ class Container {
     }
   }
 
+  /**
+   * Clear specific service cache
+   * @param id
+   */
+  unset(id) {
+    delete this.cache[id]
+  }
+
+  /**
+   * Set container parameter
+   * @param name
+   * @param value
+   */
   setParameter(name, value) {
     this.parameters[name] = value
   }
 
+  /**
+   * Get parameter value
+   * @param name
+   * @returns {*}
+   */
   getParameter(name) {
     return this.parameters[name]
   }
 
+  // Part below is simplified result from what compiled service containers usually are.
+
   getMessageProvider() {
-    return new SqlMessageProvider()
+    return new SqlMessageProvider(
+      this.get('MySQL')
+    )
   }
 
   getUserProvider() {
-    return new SqlUserProvider()
+    return new SqlUserProvider(
+      this.get('MySQL')
+    )
+  }
+
+  getMySQL() {
+    return new MySQL(
+      this.getParameter('mysql_config')
+    )
   }
 
   getMessageController() {
@@ -60,7 +92,7 @@ class Container {
   }
 
   getApiRouter() {
-    return new Router()
+    return new ApiRouter(this)
   }
 
   getChatServer() {
@@ -74,6 +106,12 @@ class Container {
     return new ApiServer(
       this.getParameter('api_config'),
       this.get('ApiRouter')
+    )
+  }
+
+  getLoginController() {
+    return new LoginController(
+      this.get('UserProvider')
     )
   }
 }

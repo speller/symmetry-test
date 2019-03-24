@@ -7,6 +7,13 @@
     "ws_host": "0.0.0.0",
     "ws_port": 12345,
     "api_host": "0.0.0.0",
-    "api_port": 1234
+    "api_port": 1234,
+    "mysql": {
+      "port": 33066,
+      "host": "symmetry-test.c4t8y9knxjqb.ap-northeast-1.rds.amazonaws.com",
+      "user": "symmetry_root",
+      "password": "SuperMegaPassword2019",
+      "database": "symmetry_test"
+    }
   }
 }

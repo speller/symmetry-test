@@ -9,26 +9,27 @@ import {
   Toolbar,
   Typography,
 } from '@material-ui/core'
+import {
+  dispatchWsMessage,
+  logout, sendMessage,
+  showLoginPage,
+  startLogin,
+} from './actions'
 import './styles.scss'
 import LoginForm from '../LoginForm'
 import { PAGE_LOGIN, PAGE_MAIN } from './constants'
-import { logout, showLoginPage } from './actions'
-import MainPage from '../MainPage'
+import ChatForm from '../ChatForm'
 import Websocket from 'react-websocket'
 import config from '../../../config'
-import { MESSAGE_TYPE_TEXT } from '../../../common/constants'
+import ChatContext from './chat-context'
 
 class Root extends Component {
   
   static defaultProps = {
     page: PAGE_MAIN,
-    currentUser: null,
     initialized: false,
     logoutInProgress: false,
-  }
-
-  state = {
-    messages: [],
+    chatContext: new ChatContext(),
   }
 
   webSocketRef
@@ -43,46 +44,36 @@ class Root extends Component {
   }
 
   isLoggedIn() {
-    return !!this.props.currentUser
+    return !!this.props.chatContext.user
   }
 
   handleWsData(data) {
     console.log(data)
+    let msg
     try {
-      const req = JSON.parse(data)
-
-      switch (req.type) {
-      case MESSAGE_TYPE_TEXT:
-        let messages = this.state.messages.concat([])
-        messages.push(req)
-        this.setState({messages})
-        break
-      }
+      msg = JSON.parse(data)
     } catch (e) {
-      // Do nothing on unknown message format
+      return
     }
+    this.props.dispatchWsMessage(msg, this.props.chatContext)
+  }
+
+  handleLogin(login, password) {
+    const props = this.props
+    props.startLogin(login, password, props.chatContext, this.webSocketRef.current)
+  }
+
+  handleSendMessage(text) {
+
   }
   
-  componentDidMount() {
-    if (!this.currentUser && !this.isInProgress()) {
-      this.props.showLoginPage()
-    }
-  }
-
   componentWillUnmount() {
     this.webSocketRef = null
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (!this.props.currentUser && prevProps.currentUser) {
-      this.setState({messages: []})
-    }
-  }
-
   render() {
     const props = this.props
-    const msgs = this.state.messages
-    
+
     const isInProgress = this.isInProgress()
     const isLoggedIn = this.isLoggedIn()
 
@@ -111,27 +102,26 @@ class Root extends Component {
               onClick={props.logout}
               disabled={isInProgress}
             >
-              {props.currentUser.name} Logout
+              {props.chatContext.user.name} Logout
             </Button>}
           </Toolbar>
         </AppBar>
-        {isLoggedIn &&
         <Websocket
           ref={this.webSocketRef}
           url={config.client.ws_url}
           onMessage={this.handleWsData.bind(this)}
-        />}
+        />
         {isInProgress &&
         <LinearProgress />}
         <main className="layout">
           {props.page === PAGE_LOGIN &&
-            <LoginForm />
+            <LoginForm loginProc={this.handleLogin.bind(this)} />
           }
-          {props.page === PAGE_MAIN && isLoggedIn &&
-            <MainPage
-              webSocket={this.webSocketRef.current}
-              user={props.currentUser}
-              messages={this.state.messages}
+          {props.page === PAGE_MAIN &&
+            <ChatForm
+              chatContext={props.chatContext}
+              sendMessageProc={this.handleSendMessage.bind(this)}
+              isLoggedIn={isLoggedIn}
             />
           }
         </main>
@@ -149,8 +139,16 @@ export default connect(
   // Add actions methods to our component props
   (dispatch) => {
     return {
-      showLoginPage: () => dispatch(showLoginPage()),
-      logout: () => dispatch(logout()),
+      startLogin: (name, password, ctx, ws) =>
+        dispatch(startLogin(name, password, ctx, ws)),
+      showLoginPage: () =>
+        dispatch(showLoginPage()),
+      logout: () =>
+        dispatch(logout()),
+      dispatchWsMessage: (msg, ctx) =>
+        dispatch(dispatchWsMessage(msg, ctx)),
+      sendTextMessage: (text, userId, ms) =>
+        dispatch(sendMessage(text, userId, ms)),
     }
   },
 )(Root)
