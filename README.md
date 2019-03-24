@@ -23,3 +23,10 @@ files respectively. For a few days while the assignment is being checked publicl
 for tuning). After this period it will be closed.
 
 You can find DB schema in the `schema.sql` file.
+
+## TO-DO
+
+- Add more unit tests (only one controller was added for demonstration).
+- Refactor chat commands processing on the backend side.
+- Add new backend service to build message objects when they are transferred to client (current code is duplicated and 
+not efficient).
