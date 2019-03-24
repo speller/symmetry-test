@@ -1,4 +1,5 @@
 import {
+  ACTION_CLEAR_CHAT,
   ACTION_DELETE_MESSAGE_SUCCESS,
   ACTION_INCOMING_MESSAGE,
   ACTION_LOGIN_FAIL,
@@ -70,6 +71,14 @@ export default function(state = {}, action) {
     return {
       ...state,
       chatContext: context3,
+    }
+
+  case ACTION_CLEAR_CHAT:
+    const context4 = ChatContext.clone(action.context)
+    context4.messages = []
+    return {
+      ...state,
+      chatContext: context4,
     }
 
   default:

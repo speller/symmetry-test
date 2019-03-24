@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import {
+  clearChat,
   deleteMessage,
   disconnected,
   dispatchWsMessage,
@@ -100,6 +101,7 @@ class Root extends Component {
   }
 
   handleSendMessage(text) {
+    const props = this.props
     if (!this.isWsConnected() && !this.shouldWsConnect()) {
       if (text === '/join') {
         this.setState({wsShouldConnect: true})
@@ -110,8 +112,12 @@ class Root extends Component {
         this.setState({wsShouldConnect: false})
         this.clearInputText()
       } else if (this.isLoggedIn()) {
-        const props = this.props
-        props.sendTextMessage(text, this.getWsRef())
+        if (text === '/clear') {
+          props.clearChat(props.chatContext)
+          this.clearInputText()
+        } else {
+          props.sendTextMessage(text, this.getWsRef())
+        }
       }
     }
   }
@@ -265,7 +271,9 @@ export default connect(
       disconnected: (ctx) =>
         dispatch(disconnected(ctx)),
       sendEmail: (email, messageIds, ws) =>
-        dispatch(sendEmail(email, messageIds, ws))
+        dispatch(sendEmail(email, messageIds, ws)),
+      clearChat: (ctx) =>
+        dispatch(clearChat(ctx)),
     }
   },
 )(Root)
