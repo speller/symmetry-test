@@ -35,7 +35,17 @@ backend and tests.
 
 ## TO-DO
 
+- Remove plain text user passwords storage (didn't made it from the beginning to save time).
 - Add more unit tests (only one controller was added for demonstration).
 - Refactor chat commands processing on the backend side.
 - Add new backend service to build message objects when they are transferred to client (current code is duplicated and 
 not efficient).
+
+## How to use
+
+1. Go to the deployment page: https://s3-ap-northeast-1.amazonaws.com/symmetry-test/index.html
+2. Press the Connect button or use the /join command in chat window.
+3. Press the Login button to authorize on the server. Only three users are available:
+   - Login: `john`, name: `John Doe`, password: `123` 
+   - Login: `taro`, name: `Taro Naka`, password: `123` 
+   - Login: `mike`, name: `Mike Smith`, password: `123` - Admin user.
