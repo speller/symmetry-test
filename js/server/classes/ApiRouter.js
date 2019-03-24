@@ -1,17 +1,32 @@
 import url from 'url'
 import isPlainObject from 'lodash-es/isPlainObject'
+import isFunction from 'lodash-es/isFunction'
+import isArray from 'lodash-es/isArray'
 
-class Router {
+/**
+ * Simple router for API calls
+ */
+class ApiRouter {
 
   routes = []
+  container
 
+  constructor(container) {
+    this.container = container
+  }
+
+  /**
+   * Execute incoming request
+   * @param request
+   * @param response
+   */
   execute(request, response) {
     const method = request.method
     const urlParsed = url.parse(request.url)
     const query = urlParsed.query
     let body = ''
 
-    console.log(`Calling ${method} ${request.url}`)
+    console.log(`Lookup route for ${method} ${request.url}`)
 
     request.on('data', data => {
       body += data
@@ -25,7 +40,6 @@ class Router {
           request.query = query
           request.body = body
         } else if (body) {
-          // TODO: Rewrite this logic using body-parser
           request.body = body
         }
       }
@@ -35,6 +49,7 @@ class Router {
       })
 
       if (!route) {
+        console.log(`Not found`)
         this.handle404(request, response)
       } else {
         this.handleRoute(route.callback, request, response)
@@ -42,6 +57,11 @@ class Router {
     })
   }
 
+  /**
+   * Send error 404 response
+   * @param request
+   * @param response
+   */
   handle404(request, response) {
     response.writeHead(404, {
       'Content-type': 'application/json',
@@ -54,6 +74,12 @@ class Router {
     response.end()
   }
 
+  /**
+   * Handle existing route
+   * @param callback
+   * @param request
+   * @param response
+   */
   handleRoute(callback, request, response) {
     const responseCtx = {
       send: (data, headers) => {
@@ -75,9 +101,27 @@ class Router {
         response.end()
       },
     }
-    callback(request, responseCtx)
+    if (isFunction(callback)) {
+      return callback(request, responseCtx)
+    } else if (isArray(callback)) {
+      const serviceId = callback[0]
+      const method = callback[1]
+      const service = this.container.get(serviceId)
+      const func = service[method]
+      console.log(`Execute ${serviceId}:${method}`)
+      const result = func.call(service, request, responseCtx)
+      if (service._clearRefOnExit) {
+        this.container.unset(serviceId)
+      }
+      return result
+    }
   }
 
+  /**
+   * Add route for GET request
+   * @param url
+   * @param callback
+   */
   get(url, callback) {
     this.routes.push({
       pattern: `GET:${url}`,
@@ -85,6 +129,11 @@ class Router {
     })
   }
 
+  /**
+   * Add route for POST request
+   * @param url
+   * @param callback
+   */
   post(url, callback) {
     this.routes.push({
       pattern: `POST:${url}`,
@@ -92,6 +141,11 @@ class Router {
     })
   }
 
+  /**
+   * Add route for OPTIONS request
+   * @param url
+   * @param callback
+   */
   options(url, callback) {
     this.routes.push({
       pattern: `OPTIONS:${url}`,
@@ -100,4 +154,4 @@ class Router {
   }
 }
 
-export default Router
+export default ApiRouter

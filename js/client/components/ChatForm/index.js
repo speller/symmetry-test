@@ -1,23 +1,18 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import Paper from '@material-ui/core/Paper/index'
-import { sendMessage } from './actions'
 import './styles.scss'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import FormControl from '@material-ui/core/FormControl'
-import InputLabel from '@material-ui/core/InputLabel'
 import Input from '@material-ui/core/Input'
-import { Button, Typography } from '@material-ui/core'
+import Button from '@material-ui/core/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PropTypes from 'prop-types'
 import Message from '../Message'
 
-class MainPage extends Component {
+class ChatForm extends Component {
 
   static propTypes = {
-    messages: PropTypes.array.isRequired,
-    webSocket: PropTypes.object.isRequired,
-    user: PropTypes.object.isRequired,
+    sendMessageProc: PropTypes.func.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
   }
 
   static defaultProps = {
@@ -39,7 +34,7 @@ class MainPage extends Component {
     const state = this.state
     const props = this.props
     if (state.text) {
-      props.sendTextMessage(state.text, props.user.id, props.webSocket)
+      props.sendMessageProc(state.text)
     }
   }
 
@@ -55,11 +50,12 @@ class MainPage extends Component {
     const props = this.props
 
     const inProgress = props.inProgress
+    const isLoggedIn = props.isLoggedIn
 
     return (
       <div className="main-page">
         <div className="chat-history">
-          {props.messages.map((message, key) => (
+          {props.chatContext.messages.map((message, key) => (
             <Message key={key} author={message.userName} text={message.text} />
           ))}
         </div>
@@ -72,7 +68,7 @@ class MainPage extends Component {
             className="text"
             autoComplete="Message Text"
             autoFocus
-            disabled={inProgress}
+            disabled={inProgress || !isLoggedIn}
             value={this.state.text}
             onChange={(e) => this.setState({text: e.target.value})}
             onKeyDown={this.handleTextKeyDown.bind(this)}
@@ -82,7 +78,7 @@ class MainPage extends Component {
             variant="contained"
             color="primary"
             className="submit"
-            disabled={inProgress}
+            disabled={inProgress || !isLoggedIn}
             onClick={this.sendTextMessage.bind(this)}
           >
             <FontAwesomeIcon icon="paper-plane" />
@@ -104,8 +100,6 @@ export default connect(
   // Add actions methods to our component props
   (dispatch) => {
     return {
-      sendTextMessage: (text, userId, ms) =>
-        dispatch(sendMessage(text, userId, ms)),
     }
   },
-)(MainPage)
+)(ChatForm)
