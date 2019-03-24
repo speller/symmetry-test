@@ -1,6 +1,10 @@
-/**
- * Created with PhpStorm.
- * User: pravdin
- * Date: 20.03.2019
- * Time: 21:18
- */
+import WebSocketServer from './classes/WebSocketServer'
+import ChatCommandProcessor from './classes/ChatCommandProcessor'
+
+
+const ws = new WebSocketServer(
+  new ChatCommandProcessor(),
+  12345
+)
+
+ws.run()

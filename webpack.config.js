@@ -20,8 +20,12 @@ module.exports = (env, argv) => {
   const entries = {
     'app': './js/entry.js',
   }
+  const serverEntries = {
+    'server': './js/server.js',
+  }
 
   let config = {
+    target: 'web',
     // Dev mode web server config
     devServer: {
       inline: true,
@@ -46,7 +50,7 @@ module.exports = (env, argv) => {
           use: [
             'style-loader', // Load styles from JS
             'css-loader', // Ability to import CSS in JS module
-            'postcss-loader', // Add CSS refixes
+            'postcss-loader', // Add CSS prefixes
             'sass-loader?sourceMap', // Compile SCSS to CSS
           ],
         },
@@ -67,7 +71,7 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.(woff|woff2|eot|ttf|svg)$/,
-          loader: 'file-loader?name=fonts/[name].[ext]'
+          loader: 'file-loader?name=fonts/[name].[ext]',
         },
       ],
     },
@@ -88,5 +92,32 @@ module.exports = (env, argv) => {
       new TerserPlugin(),
     ]
   }
-  return config
+
+
+
+  let serverConfig = {
+    target: 'node',
+    entry: serverEntries,
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          loaders: ['babel-loader'],
+          exclude: /node_modules/,
+        },
+      ],
+    },
+    // Where to put compiled JS
+    output: {
+      path: path.resolve(__dirname, 'build'),
+      filename: '[name].js',
+    },
+    plugins: [
+      configReplacementPlugin,
+    ],
+  }
+
+
+
+  return [config, serverConfig]
 }
