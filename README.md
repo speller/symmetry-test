@@ -43,7 +43,7 @@ not efficient).
 
 ## How to use
 
-1. Go to the deployment page: https://s3-ap-northeast-1.amazonaws.com/symmetry-test/index.html
+1. Go to the deployment page: http://s3-ap-northeast-1.amazonaws.com/symmetry-test/index.html
 2. Press the Connect button or use the /join command in chat window.
 3. Press the Login button to authorize on the server. Only three users are available:
    - Login: `john`, name: `John Doe`, password: `123` 
