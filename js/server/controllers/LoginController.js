@@ -97,6 +97,7 @@ class LoginController extends BaseController {
           id: user.id,
           name: user.name,
           login: user.login,
+          isAdmin: user.is_admin,
         },
       }
     )

@@ -59,11 +59,18 @@ class SqlMessageProvider extends BaseProvider{
       'SELECT m.*, u.name AS user_name ' +
       'FROM messages m ' +
       'JOIN users u ON m.user_id = u.id ' +
+      'WHERE m.deleted_by_user_id IS NULL ' +
       'ORDER BY m.timestamp DESC, m.id DESC ' +
       'LIMIT ?', [count]
     )
-    console.log(rows)
     return rows.reverse()
+  }
+
+  async markMessageDeleted(id, userId) {
+    await this.connection.query(
+      'UPDATE messages SET deleted_by_user_id = ? WHERE id = ?',
+      [userId, id]
+    )
   }
 }
 export default SqlMessageProvider

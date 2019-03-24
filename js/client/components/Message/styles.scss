@@ -4,18 +4,28 @@
 		padding: 8px;
 		box-sizing: border-box;
 
-		.author {
-			font-weight: bold;
-		}
+		.header {
+			display: flex;
 
-		.time {
-			color: green;
-			font-size: 70%;
-			margin-left: 16px;
-		}
+			.author {
+				font-weight: bold;
+			}
 
-		.text {
-			margin-top: 4px;
+			.time {
+				color: green;
+				font-size: 70%;
+				margin-left: 16px;
+				flex-grow: 30;
+			}
+
+			.delete {
+				min-width: 32px;
+				color: crimson;
+			}
+
+			.text {
+				margin-top: 4px;
+			}
 		}
 	}
 }

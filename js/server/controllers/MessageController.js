@@ -1,4 +1,8 @@
-import { MESSAGE_TYPE_TEXT } from '../../common/constants'
+import {
+  MESSAGE_TYPE_DELETE_MESSAGE_FAIL,
+  MESSAGE_TYPE_DELETE_MESSAGE_SUCCESS,
+  MESSAGE_TYPE_TEXT,
+} from '../../common/constants'
 import BaseController from './BaseController'
 
 /**
@@ -44,6 +48,55 @@ class MessageController extends BaseController {
         }
       )
     }
+  }
+
+  /**
+   * Delete a message action handler
+   * @param request
+   * @returns {Promise<void>}
+   */
+  async deleteMessageAction(request) {
+    const { data, connectionId, server } = request
+    const sendErrorMessage = text => {
+      server.sendMessage(
+        connectionId,
+        {
+          type: MESSAGE_TYPE_DELETE_MESSAGE_FAIL,
+          message: text,
+        }
+      )
+    }
+
+    const user = await this.userProvider.findUserById(server.getConnectionUserId(connectionId))
+    if (!user) {
+      sendErrorMessage('User not found')
+      return
+    }
+
+    const msg = await this.messageProvider.findMessageById(data.messageId)
+    if (!msg) {
+      sendErrorMessage('Message not found')
+      return
+    }
+
+    const isAdmin = Boolean(user.is_admin)
+    if (!isAdmin && msg.user_id !== user.id) {
+      sendErrorMessage('Permission denied')
+      return
+    }
+
+    try {
+      await this.messageProvider.markMessageDeleted(msg.id, user.id)
+    } catch (e) {
+      sendErrorMessage(e.message)
+    }
+
+    server.sendBroadcastMessage(
+      {
+        type: MESSAGE_TYPE_DELETE_MESSAGE_SUCCESS,
+        messageId: msg.id,
+      }
+    )
   }
 }
 

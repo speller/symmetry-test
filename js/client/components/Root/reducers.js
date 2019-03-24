@@ -1,4 +1,5 @@
 import {
+  ACTION_DELETE_MESSAGE_SUCCESS,
   ACTION_INCOMING_MESSAGE,
   ACTION_LOGIN_FAIL,
   ACTION_LOGIN_SUCCESS,
@@ -61,6 +62,14 @@ export default function(state = {}, action) {
     return {
       ...state,
       logoutInProgress: false,
+    }
+
+  case ACTION_DELETE_MESSAGE_SUCCESS:
+    const context3 = ChatContext.clone(action.context)
+    context3.messages = context3.messages.filter(msg => msg.messageId !== action.payload.messageId)
+    return {
+      ...state,
+      chatContext: context3,
     }
 
   default:

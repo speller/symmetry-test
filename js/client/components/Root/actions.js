@@ -1,4 +1,5 @@
 import {
+  ACTION_DELETE_MESSAGE,
   ACTION_DISPATCH_MESSAGE,
   ACTION_LOGIN,
   ACTION_LOGOUT,
@@ -39,6 +40,17 @@ export function sendMessage(text, ws) {
     ws,
   }
 }
+
+export function deleteMessage(messageId, ws) {
+  return {
+    type: ACTION_DELETE_MESSAGE,
+    payload: {
+      messageId,
+    },
+    ws,
+  }
+}
+
 export function showLoginPage() {
   return { 
     type: ACTION_SET_PAGE,

@@ -9,14 +9,17 @@ import rootSagas from './client/components/Root/sagas'
 import mainPageSagas from './client/components/ChatForm/sagas'
 import rootReducers from './client/components/Root/reducers'
 import loginFormReducers from './client/components/LoginForm/reducers'
-import mainPageReducers from './client/components/ChatForm/reducers'
+import chatFormReducers from './client/components/ChatForm/reducers'
+import messageReducers from './client/components/Message/reducers'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faLock } from '@fortawesome/free-solid-svg-icons/faLock'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons/faPaperPlane'
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons/faTimesCircle'
 
 library.add(
   faLock,
   faPaperPlane,
+  faTimesCircle,
 )
 
 
@@ -32,7 +35,8 @@ function Page(store) {
 const reducers = {
   root: rootReducers,
   loginForm: loginFormReducers,
-  mainPage: mainPageReducers,
+  mainPage: chatFormReducers,
+  message: messageReducers,
 }
 const sagas = [].concat(rootSagas, mainPageSagas)
 

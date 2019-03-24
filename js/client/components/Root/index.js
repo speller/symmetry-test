@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import {
+  deleteMessage,
   disconnected,
   dispatchWsMessage,
   logout,
@@ -95,6 +96,11 @@ class Root extends Component {
     props.sendTextMessage(text, this.getWsRef())
   }
   
+  handleDeleteMessage(msgId) {
+    const props = this.props
+    props.deleteMessage(msgId, this.getWsRef(), props.chatContext)
+  }
+
   componentWillUnmount() {
     this.webSocketRef = null
   }
@@ -154,6 +160,7 @@ class Root extends Component {
             <ChatForm
               chatContext={props.chatContext}
               sendMessageProc={this.handleSendMessage.bind(this)}
+              deleteMessageProc={this.handleDeleteMessage.bind(this)}
               isLoggedIn={isLoggedIn}
             />
           }
@@ -182,6 +189,8 @@ export default connect(
         dispatch(dispatchWsMessage(msg, ctx)),
       sendTextMessage: (text, ws) =>
         dispatch(sendMessage(text, ws)),
+      deleteMessage: (msgId, ws) =>
+        dispatch(deleteMessage(msgId, ws)),
       disconnected: (ctx) =>
         dispatch(disconnected(ctx)),
     }

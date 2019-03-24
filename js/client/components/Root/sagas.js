@@ -1,6 +1,9 @@
 import { delay, call, put, take, takeLatest, takeEvery } from 'redux-saga/effects'
 import { putFailAction } from './utils'
 import {
+  ACTION_DELETE_MESSAGE,
+  ACTION_DELETE_MESSAGE_FAIL,
+  ACTION_DELETE_MESSAGE_SUCCESS,
   ACTION_DISPATCH_MESSAGE,
   ACTION_INCOMING_MESSAGE,
   ACTION_LOGIN,
@@ -14,12 +17,14 @@ import {
   ACTION_SEND_MESSAGE_SUCCESS,
 } from './constants'
 import {
+  MESSAGE_TYPE_DELETE_MESSAGE, MESSAGE_TYPE_DELETE_MESSAGE_FAIL, MESSAGE_TYPE_DELETE_MESSAGE_SUCCESS,
   MESSAGE_TYPE_LOGIN,
   MESSAGE_TYPE_LOGIN_FAIL,
   MESSAGE_TYPE_LOGIN_SUCCESS,
   MESSAGE_TYPE_LOGOUT,
   MESSAGE_TYPE_LOGOUT_FAIL,
-  MESSAGE_TYPE_LOGOUT_SUCCESS, MESSAGE_TYPE_TEXT,
+  MESSAGE_TYPE_LOGOUT_SUCCESS,
+  MESSAGE_TYPE_TEXT,
 } from '../../../common/constants'
 
 
@@ -39,6 +44,46 @@ function * sendMessageWorker(action) {
   } catch (e) {
     yield putFailAction(ACTION_SEND_MESSAGE_FAIL, e)
   }
+}
+
+
+function * deleteMessageWorker(action) {
+  try {
+    yield call(
+      [action.ws, 'sendMessage'],
+      JSON.stringify({
+        type: MESSAGE_TYPE_DELETE_MESSAGE,
+        ...action.payload,
+      })
+    )
+
+    const responseAction = yield take(
+      action =>
+        action.type === ACTION_DISPATCH_MESSAGE &&
+        (action.payload.type === MESSAGE_TYPE_DELETE_MESSAGE_SUCCESS || action.payload.type === MESSAGE_TYPE_DELETE_MESSAGE_FAIL)
+    )
+
+    if (responseAction.payload.type === MESSAGE_TYPE_DELETE_MESSAGE_SUCCESS) {
+      yield put({
+        type: ACTION_DELETE_MESSAGE_SUCCESS,
+        payload: responseAction.payload,
+        context: responseAction.context,
+      })
+    } else {
+      yield putFailAction(ACTION_DELETE_MESSAGE_FAIL, responseAction.payload)
+    }
+  } catch (e) {
+    yield putFailAction(ACTION_DELETE_MESSAGE_FAIL, e)
+  }
+}
+
+// For cases when someone deletes message, not current user
+function * broadcastDeleteMessageWorker(action) {
+  yield put({
+    type: ACTION_DELETE_MESSAGE_SUCCESS,
+    payload: action.payload,
+    context: action.context,
+  })
 }
 
 
@@ -123,11 +168,22 @@ export default [
     yield takeLatest(ACTION_SEND_MESSAGE, sendMessageWorker)
   },
   function * () {
+    yield takeLatest(ACTION_DELETE_MESSAGE, deleteMessageWorker)
+  },
+  function * () {
     yield takeEvery(
       action =>
         action.type === ACTION_DISPATCH_MESSAGE &&
         action.payload.type === MESSAGE_TYPE_TEXT,
       incomingMessageWorker
+    )
+  },
+  function * () {
+    yield takeEvery(
+      action =>
+        action.type === ACTION_DISPATCH_MESSAGE &&
+        action.payload.type === MESSAGE_TYPE_DELETE_MESSAGE_SUCCESS,
+      broadcastDeleteMessageWorker
     )
   },
 ]

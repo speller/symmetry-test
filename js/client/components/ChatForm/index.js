@@ -12,7 +12,9 @@ class ChatForm extends Component {
 
   static propTypes = {
     sendMessageProc: PropTypes.func.isRequired,
+    deleteMessageProc: PropTypes.func.isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
+    chatContext: PropTypes.object.isRequired,
   }
 
   static defaultProps = {
@@ -51,12 +53,18 @@ class ChatForm extends Component {
 
     const inProgress = props.inProgress
     const isLoggedIn = props.isLoggedIn
+    const user = props.chatContext.user
 
     return (
       <div className="main-page">
         <div className="chat-history">
           {props.chatContext.messages.map((message, key) => (
-            <Message key={key} message={message} />
+            <Message
+              key={key}
+              message={message}
+              canDelete={!!user && message.userId > 0 && (user.isAdmin || user.id === message.userId)}
+              deleteProc={props.deleteMessageProc}
+            />
           ))}
         </div>
 
