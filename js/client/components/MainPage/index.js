@@ -10,17 +10,17 @@ import Input from '@material-ui/core/Input'
 import { Button, Typography } from '@material-ui/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PropTypes from 'prop-types'
+import Message from '../Message'
 
 class MainPage extends Component {
 
   static propTypes = {
-    messages: PropTypes.array,
+    messages: PropTypes.array.isRequired,
     webSocket: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
   }
 
   static defaultProps = {
-    messages: [],
     inProgress: false,
     messageSentSuccess: false,
   }
@@ -59,12 +59,9 @@ class MainPage extends Component {
     return (
       <div className="main-page">
         <div className="chat-history">
-          <Paper className="message">
-            <Typography className="author" variant="caption" gutterBottom>John Doe</Typography>
-            <Typography className="text" variant="body1">
-              Hello world!
-            </Typography>
-          </Paper>
+          {props.messages.map((message, key) => (
+            <Message key={key} author={message.userName} text={message.text} />
+          ))}
         </div>
 
         <div className="send-msg-block">

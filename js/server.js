@@ -1,38 +1,41 @@
-import WebSocketServer from './server/classes/WebSocketServer'
-import ChatCommandProcessor from './server/classes/ChatCommandProcessor'
-import ApiServer from './server/classes/ApiServer'
 import config from './config'
-import Router from './server/classes/Router'
 import DefaultController from './server/controllers/DefaultController'
 import LoginController from './server/controllers/LoginController'
+import { MESSAGE_TYPE_TEXT } from './common/constants'
+import Container from './server/classes/Container'
 
+
+const container = new Container()
 
 // Initialize WebSocket and API servers
 
-const ws = new WebSocketServer(
+container.setParameter(
+  'chat_config',
   {
     host: config.server.ws_host,
     port: config.server.ws_port,
-  },
-  new ChatCommandProcessor()
+  }
 )
 
-const router = new Router()
-const apiServer = new ApiServer(
+container.setParameter(
+  'api_config',
   {
     host: config.server.api_host,
     port: config.server.api_port,
-  },
-  router
+  }
 )
 
-// Setup API server routes
+const apiRouter = container.get('ApiRouter')
+const chatRouter = container.get('ChatRouter')
 
-router.get('/', DefaultController.default)
-router.post('/login', LoginController.login)
-router.options('/login', LoginController.loginOptions)
+// Setup WebSocket routes
+chatRouter.addCommand(MESSAGE_TYPE_TEXT, ['MessageController', 'messageAction'])
+
+// Setup API server routes
+apiRouter.get('/', DefaultController.default)
+apiRouter.post('/login', LoginController.login)
+apiRouter.options('/login', LoginController.loginOptions)
 
 // Run servers
-
-ws.run()
-apiServer.run()
+container.get('ApiServer').run()
+container.get('ChatServer').run()

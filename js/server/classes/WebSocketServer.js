@@ -1,4 +1,5 @@
 import WebSocket from 'ws'
+import { MESSAGE_TYPE_TEXT } from '../../common/constants'
 
 class WebSocketServer {
 
@@ -45,17 +46,26 @@ class WebSocketServer {
       ws.on('message', message => {
         console.log('received: %s', message)
         let response
+        let msg
         try {
-          let msg = JSON.parse(message)
-          response = this.commandProcessor.processCommand(msg)
+          msg = JSON.parse(message)
         } catch (e) {
           console.log('Can not parse JSON')
         }
-        if (response) {
-          ws.send(JSON.stringify(response))
+        if (msg) {
+          response = this.commandProcessor.processCommand(msg)
+          if (response) {
+            const resText = JSON.stringify(response)
+            ws.send(resText)
+          }
         }
       })
-      ws.send('Hello WebSocket client!')
+      ws.send(JSON.stringify({
+        type: MESSAGE_TYPE_TEXT,
+        userId: -1,
+        userName: 'System',
+        text: 'Hello WebSocket client!',
+      }))
     })
   }
 }

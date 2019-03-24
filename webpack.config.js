@@ -117,6 +117,7 @@ module.exports = (env, argv) => {
     plugins: [
       configReplacementPlugin,
     ],
+    devtool: false,
   }
 
   // Dev server don't want to reload pages if a node configuration returned

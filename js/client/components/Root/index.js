@@ -16,6 +16,7 @@ import { logout, showLoginPage } from './actions'
 import MainPage from '../MainPage'
 import Websocket from 'react-websocket'
 import config from '../../../config'
+import { MESSAGE_TYPE_TEXT } from '../../../common/constants'
 
 class Root extends Component {
   
@@ -24,6 +25,10 @@ class Root extends Component {
     currentUser: null,
     initialized: false,
     logoutInProgress: false,
+  }
+
+  state = {
+    messages: [],
   }
 
   webSocketRef
@@ -45,11 +50,17 @@ class Root extends Component {
     console.log(data)
     try {
       const req = JSON.parse(data)
+
+      switch (req.type) {
+      case MESSAGE_TYPE_TEXT:
+        let messages = this.state.messages.concat([])
+        messages.push(req)
+        this.setState({messages})
+        break
+      }
     } catch (e) {
       // Do nothing on unknown message format
     }
-    // let result = JSON.parse(data)
-    // this.setState({ count: this.state.count + result.movement })
   }
   
   componentDidMount() {
@@ -62,8 +73,15 @@ class Root extends Component {
     this.webSocketRef = null
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (!this.props.currentUser && prevProps.currentUser) {
+      this.setState({messages: []})
+    }
+  }
+
   render() {
     const props = this.props
+    const msgs = this.state.messages
     
     const isInProgress = this.isInProgress()
     const isLoggedIn = this.isLoggedIn()
@@ -110,7 +128,11 @@ class Root extends Component {
             <LoginForm />
           }
           {props.page === PAGE_MAIN && isLoggedIn &&
-            <MainPage webSocket={this.webSocketRef.current} user={props.currentUser} />
+            <MainPage
+              webSocket={this.webSocketRef.current}
+              user={props.currentUser}
+              messages={this.state.messages}
+            />
           }
         </main>
       </div>
