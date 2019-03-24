@@ -14,6 +14,7 @@ import {
   disconnected,
   dispatchWsMessage,
   logout,
+  sendEmail,
   sendMessage,
   showLoginPage,
   startLogin,
@@ -127,6 +128,18 @@ class Root extends Component {
     props.deleteMessage(msgId, this.getWsRef(), props.chatContext)
   }
 
+  handleSendEmail() {
+    const msgIds = this.props.chatContext.messages
+      .filter(msg => msg.messageId > 0)
+      .map(msg => msg.messageId)
+    if (msgIds.length > 0) {
+      const email = prompt('Enter your email')
+      if (email) {
+        this.props.sendEmail(email, msgIds, this.getWsRef())
+      }
+    }
+  }
+
   componentWillUnmount() {
     this.webSocketRef = null
   }
@@ -147,6 +160,15 @@ class Root extends Component {
             <Typography variant="h6" color="inherit" noWrap className="title">
               Test Chat
             </Typography>
+            <Button
+              className="sendmail"
+              color="primary"
+              variant="outlined"
+              onClick={this.handleSendEmail.bind(this)}
+              disabled={isInProgress || !isLoggedIn}
+            >
+              Send E-Mail
+            </Button>
             {shouldWsConnect &&
             <Button 
               color="primary" 
@@ -167,9 +189,9 @@ class Root extends Component {
             </Button>}
             {!isLoggedIn &&
             <Button
+              className="login"
               color="primary"
               variant="outlined"
-              className="login"
               onClick={props.showLoginPage}
               disabled={isInProgress || !isWsConnected}
             >
@@ -177,6 +199,7 @@ class Root extends Component {
             </Button>}
             {isLoggedIn &&
             <Button
+              className="logout"
               color="primary"
               variant="outlined"
               onClick={this.handleLogout.bind(this)}
@@ -241,6 +264,8 @@ export default connect(
         dispatch(deleteMessage(msgId, ws)),
       disconnected: (ctx) =>
         dispatch(disconnected(ctx)),
+      sendEmail: (email, messageIds, ws) =>
+        dispatch(sendEmail(email, messageIds, ws))
     }
   },
 )(Root)

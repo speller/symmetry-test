@@ -4,6 +4,7 @@ import {
   ACTION_LOGIN,
   ACTION_LOGOUT,
   ACTION_LOGOUT_SUCCESS,
+  ACTION_SEND_EMAIL,
   ACTION_SEND_MESSAGE,
   ACTION_SET_PAGE,
   PAGE_LOGIN,
@@ -46,6 +47,17 @@ export function deleteMessage(messageId, ws) {
     type: ACTION_DELETE_MESSAGE,
     payload: {
       messageId,
+    },
+    ws,
+  }
+}
+
+export function sendEmail(email, messageIds, ws) {
+  return {
+    type: ACTION_SEND_EMAIL,
+    payload: {
+      email,
+      messageIds,
     },
     ws,
   }

@@ -53,6 +53,30 @@ class SqlMessageProvider extends BaseProvider{
   }
 
   /**
+   * Fetch messages by id list.
+   * @param ids
+   * @param userId
+   * @returns {Promise<Array|*>}
+   */
+  async getMessagesByIdsForUser(ids, userId) {
+    if (ids.length <= 0) {
+      return []
+    }
+    const result = await this.connection.query(
+      'SELECT m.*, u.name AS user_name, u2.name AS recipient_name ' +
+      'FROM messages m ' +
+      'JOIN users u ON m.user_id = u.id ' +
+      'LEFT JOIN users u2 ON m.recipient_user_id = u2.id ' +
+      'WHERE m.deleted_by_user_id IS NULL AND ' +
+      ' (m.recipient_user_id = ? OR m.recipient_user_id IS NULL) AND ' +
+      ' m.id IN (?) ' +
+      'ORDER BY FIELD(m.id, ?)',
+      [userId, ids, ids]
+    )
+    return result[0]
+  }
+
+  /**
    * Returns last messages
    * @param count
    * @param userId

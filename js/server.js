@@ -2,7 +2,7 @@ import config from './config'
 import {
   MESSAGE_TYPE_DELETE_MESSAGE,
   MESSAGE_TYPE_LOGIN,
-  MESSAGE_TYPE_LOGOUT,
+  MESSAGE_TYPE_LOGOUT, MESSAGE_TYPE_SEND_EMAIL,
   MESSAGE_TYPE_TEXT,
 } from './common/constants'
 import Container from './server/classes/Container'
@@ -30,6 +30,7 @@ chatRouter.addCommand(MESSAGE_TYPE_LOGIN, ['LoginController', 'loginAction'])
 chatRouter.addCommand(MESSAGE_TYPE_LOGOUT, ['LoginController', 'logoutAction'])
 chatRouter.addCommand(MESSAGE_TYPE_TEXT, ['MessageController', 'messageAction'])
 chatRouter.addCommand(MESSAGE_TYPE_DELETE_MESSAGE, ['MessageController', 'deleteMessageAction'])
+chatRouter.addCommand(MESSAGE_TYPE_SEND_EMAIL, ['EmailController', 'sendEmailHistoryAction'])
 
 // Run server
 container.get('ChatServer').run()

@@ -6,6 +6,7 @@ import WebSocketServer from './WebSocketServer'
 import SqlUserProvider from './SqlUserProvider'
 import MySQL from './MySQL'
 import LoginController from '../controllers/LoginController'
+import EmailController from '../controllers/EmailController'
 
 /**
  * Very simple dependency container
@@ -98,6 +99,13 @@ class Container {
 
   getLoginController() {
     return new LoginController(
+      this.get('UserProvider'),
+      this.get('MessageProvider'),
+    )
+  }
+
+  getEmailController() {
+    return new EmailController(
       this.get('UserProvider'),
       this.get('MessageProvider'),
     )
