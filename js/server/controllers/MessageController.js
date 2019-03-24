@@ -5,10 +5,11 @@ import {
 } from '../../common/constants'
 import BaseController from './BaseController'
 import { getColorByUserId } from '../utils'
-import { CHAT_COMMAND_DIRECT_MESSAGE } from '../constants'
+import { CHAT_COMMAND_DIRECT_MESSAGE, CHAT_COMMAND_HISTORY } from '../constants'
 
 const chatCommands = [
   CHAT_COMMAND_DIRECT_MESSAGE,
+  CHAT_COMMAND_HISTORY,
 ]
 
 /**
@@ -34,7 +35,7 @@ class MessageController extends BaseController {
    * @returns {Promise<void>}
    */
   async messageAction(request) {
-    const { data, connectionId, server } = request
+    const { connectionId, server } = request
     const user = await this.userProvider.findUserById(server.getConnectionUserId(connectionId))
     if (user) {
       this.processCommand(request, user)
@@ -44,10 +45,13 @@ class MessageController extends BaseController {
   processCommand(request, user) {
     const { data } = request
     const text = data.text
-    const curCommand = chatCommands.filter(cmd => text.match(new RegExp(`\^\/${cmd} `)))[0] ?? null
+    const commandsPattern = chatCommands.join('|')
+    const matches = RegExp(`^/(${commandsPattern})( |$)`).exec(text)
+    const curCommand = matches ? matches[1] : null
     console.log(`message command: ${curCommand}`)
     switch (curCommand) {
     case CHAT_COMMAND_DIRECT_MESSAGE: return this.processDirectMessage(request, user)
+    case CHAT_COMMAND_HISTORY: return this.processHistory(request, user)
     default: return this.processDefaultCommand(request, user)
     }
   }
@@ -123,6 +127,51 @@ class MessageController extends BaseController {
       server.sendMessage(
         recipientConnections[i],
         msgObject
+      )
+    }
+  }
+
+  async processHistory(request, user) {
+    const { data, connectionId, server } = request
+    const text = data.text
+
+    const re = new RegExp(`^\\/${CHAT_COMMAND_HISTORY}( \\d+|)( \\d+|)$`)
+    const result = re.exec(text)
+    if (!result) {
+      console.log('history command failed to parse message')
+      return
+    }
+
+    console.log(`parsed values: ${result[1]}, ${result[2]}`)
+    const startIdx = result[1] ? Number(result[1].trim()) : -1
+    const endIdx = result[2] ? Number(result[2].trim()) : -1
+    let messages
+
+    if (startIdx < 0) {
+      console.log(`fetching last 20`)
+      messages = await this.messageProvider.getLastMessages(20, user.id)
+    } else {
+      console.log(`fetching: ${startIdx}, ${endIdx < 0 ? 10 : endIdx - startIdx}`)
+      messages = await this.messageProvider.getMessagesRange(user.id, startIdx, endIdx < 0 ? 10 : endIdx - startIdx)
+    }
+
+    for (const i in messages) {
+      const msg = messages[i]
+      server.sendMessage(
+        connectionId,
+        {
+          type: MESSAGE_TYPE_TEXT,
+          userId: msg.user_id,
+          userName: msg.user_name,
+          text: msg.text,
+          time: msg.timestamp,
+          messageId: msg.id,
+          userColor: getColorByUserId(msg.user_id),
+          isDirectMessage: msg.recipient_user_id > 0,
+          recipientId: msg.recipient_user_id,
+          recipientName: msg.recipient_name,
+          recipientUserColor: getColorByUserId(msg.recipient_user_id),
+        }
       )
     }
   }

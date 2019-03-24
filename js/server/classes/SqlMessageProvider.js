@@ -73,6 +73,28 @@ class SqlMessageProvider extends BaseProvider{
     return rows.reverse()
   }
 
+  /**
+   * Returns range of messages
+   * @param count
+   * @param userId
+   * @param startIdx
+   * @returns {Promise<null>}
+   */
+  async getMessagesRange(userId, startIdx, count) {
+    const [rows] = await this.connection.query(
+      'SELECT m.*, u.name AS user_name, u2.name AS recipient_name ' +
+      'FROM messages m ' +
+      'JOIN users u ON m.user_id = u.id ' +
+      'LEFT JOIN users u2 ON m.recipient_user_id = u2.id ' +
+      'WHERE m.deleted_by_user_id IS NULL AND ' +
+      ' (m.recipient_user_id = ? OR m.recipient_user_id IS NULL) ' +
+      'ORDER BY m.timestamp ASC, m.id ASC ' +
+      'LIMIT ?, ?',
+      [userId, startIdx, count]
+    )
+    return rows
+  }
+
   async markMessageDeleted(id, userId) {
     await this.connection.query(
       'UPDATE messages SET deleted_by_user_id = ? WHERE id = ?',
