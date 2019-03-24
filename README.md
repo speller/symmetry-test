@@ -24,6 +24,15 @@ for tuning). After this period it will be closed.
 
 You can find DB schema in the `schema.sql` file.
 
+## Comments
+
+This project was created fully in modern ES syntax using classes, static fields, imports, etc. To make it working in 
+browser and in NodeJS - webpack is used to transpile modern syntax. 
+
+This approach have its own pros and cons for NodeJS, but I decided to do that because I'm more familiar with
+modern syntax (code is more simple and clear) and to keep the whole project in the same style for frontend, 
+backend and tests.
+
 ## TO-DO
 
 - Add more unit tests (only one controller was added for demonstration).
