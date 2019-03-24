@@ -94,7 +94,7 @@ class LoginController extends BaseController {
       `${user.name} has joined this chat`
     )
 
-    const lastMessages = await this.messageProvider.getLastMessages(20)
+    const lastMessages = await this.messageProvider.getLastMessages(20, user.id)
     for (const i in lastMessages) {
       const message = lastMessages[i]
       server.sendMessage(
@@ -107,6 +107,10 @@ class LoginController extends BaseController {
           time: message.timestamp,
           messageId: message.id,
           userColor: getColorByUserId(message.user_id),
+          isDirectMessage: message.recipient_user_id > 0,
+          recipientId: message.recipient_user_id,
+          recipientName: message.recipient_name,
+          recipientUserColor: getColorByUserId(message.recipient_user_id),
         }
       )
     }

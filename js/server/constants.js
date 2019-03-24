@@ -1,0 +1,1 @@
+export const CHAT_COMMAND_DIRECT_MESSAGE = 'dm'
