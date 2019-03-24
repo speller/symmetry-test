@@ -42,6 +42,12 @@ class MessageController extends BaseController {
     }
   }
 
+  /**
+   * Process incoming text command or message
+   * @param request
+   * @param user
+   * @returns {Promise<void>|Promise<undefined>}
+   */
   processCommand(request, user) {
     const { data } = request
     const text = data.text
@@ -56,6 +62,12 @@ class MessageController extends BaseController {
     }
   }
 
+  /**
+   * Default processing - add new regular message
+   * @param request
+   * @param user
+   * @returns {Promise<void>}
+   */
   async processDefaultCommand(request, user) {
     const { data, server } = request
     const msgId = await this.messageProvider.addMessage(
@@ -78,6 +90,12 @@ class MessageController extends BaseController {
     )
   }
 
+  /**
+   * Add new direct message
+   * @param request
+   * @param user
+   * @returns {Promise<void>}
+   */
   async processDirectMessage(request, user) {
     const { data, connectionId, server } = request
     const text = data.text
@@ -131,6 +149,12 @@ class MessageController extends BaseController {
     }
   }
 
+  /**
+   * Process history command
+   * @param request
+   * @param user
+   * @returns {Promise<void>}
+   */
   async processHistory(request, user) {
     const { data, connectionId, server } = request
     const text = data.text

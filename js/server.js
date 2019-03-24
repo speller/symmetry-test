@@ -2,7 +2,8 @@ import config from './config'
 import {
   MESSAGE_TYPE_DELETE_MESSAGE,
   MESSAGE_TYPE_LOGIN,
-  MESSAGE_TYPE_LOGOUT, MESSAGE_TYPE_SEND_EMAIL,
+  MESSAGE_TYPE_LOGOUT,
+  MESSAGE_TYPE_SEND_EMAIL,
   MESSAGE_TYPE_TEXT,
 } from './common/constants'
 import Container from './server/classes/Container'
