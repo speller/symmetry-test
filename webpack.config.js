@@ -20,7 +20,7 @@ module.exports = (env, argv) => {
   })
 
   const entries = {
-    'app': './js/entry.js',
+    'app': './js/client.js',
   }
   const serverEntries = {
     'server': './js/server.js',
