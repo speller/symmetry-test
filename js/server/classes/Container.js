@@ -28,7 +28,7 @@ class Container {
     if (isFunction(this[method])) {
       return this.cache[id] = this[method]()
     } else {
-      throw new Error(`Can not find servise with id ${id}`)
+      throw new Error(`Can not find service with id ${id}`)
     }
   }
 

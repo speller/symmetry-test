@@ -18,17 +18,19 @@ class BaseController {
         type: MESSAGE_TYPE_TEXT,
         userId: -1,
         userName: 'System',
+        time: new Date(),
         text,
       }
     )
   }
 
-  sendBroadcastMessage(server, text, excludedConnections = []) {
+  sendBroadcastMessageAsSystem(server, text, excludedConnections = []) {
     server.sendBroadcastMessage(
       {
         type: MESSAGE_TYPE_TEXT,
         userId: -1,
         userName: 'System',
+        time: new Date(),
         text,
       },
       excludedConnections

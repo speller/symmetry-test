@@ -56,7 +56,7 @@ class ChatForm extends Component {
       <div className="main-page">
         <div className="chat-history">
           {props.chatContext.messages.map((message, key) => (
-            <Message key={key} author={message.userName} text={message.text} />
+            <Message key={key} message={message} />
           ))}
         </div>
 

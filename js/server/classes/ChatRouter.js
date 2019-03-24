@@ -45,9 +45,6 @@ class ChatRouter {
         const service = this.container.get(serviceId)
         console.log(`Execute ${serviceId}:${method}`)
         service[method].call(service, request)
-        if (service._clearRefOnExit) {
-          this.container.unset(serviceId)
-        }
       }
     }
   }

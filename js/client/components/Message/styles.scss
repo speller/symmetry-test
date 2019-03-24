@@ -1,0 +1,21 @@
+.chat-history {
+	.message {
+		margin: 16px 0;
+		padding: 8px;
+		box-sizing: border-box;
+
+		.author {
+			font-weight: bold;
+		}
+
+		.time {
+			color: green;
+			font-size: 70%;
+			margin-left: 16px;
+		}
+
+		.text {
+			margin-top: 4px;
+		}
+	}
+}

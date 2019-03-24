@@ -10,7 +10,6 @@ import BaseController from './BaseController'
  */
 class LoginController extends BaseController {
   userProvider
-  _clearRefOnExit = true
 
   constructor(userProvider) {
     super()
@@ -86,7 +85,7 @@ class LoginController extends BaseController {
             },
           }
         )
-        this.sendBroadcastMessage(
+        this.sendBroadcastMessageAsSystem(
           server,
           `${user.name} has joined this chat`
         )
@@ -121,7 +120,7 @@ class LoginController extends BaseController {
     this.userProvider.findUserById(userId)
       .then(user => {
         if (user) {
-          this.sendBroadcastMessage(
+          this.sendBroadcastMessageAsSystem(
             server,
             `${user.name} has left this chat`
           )

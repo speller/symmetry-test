@@ -1,21 +1,10 @@
 .main-page {
+  max-width: 600px;
+  margin: 0 auto;
+
   .chat-history {
     margin: 24px 0;
     box-sizing: border-box;
-
-    .message {
-      margin: 16px 0;
-      padding: 8px;
-      box-sizing: border-box;
-
-      .author {
-        font-weight: bold;
-      }
-
-      .text {
-
-      }
-    }
   }
 
   .send-msg-block {

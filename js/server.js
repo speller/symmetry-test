@@ -27,6 +27,5 @@ chatRouter.addCommand(MESSAGE_TYPE_TEXT, ['MessageController', 'messageAction'])
 chatRouter.addCommand(MESSAGE_TYPE_LOGIN, ['LoginController', 'loginAction'])
 chatRouter.addCommand(MESSAGE_TYPE_LOGOUT, ['LoginController', 'logoutAction'])
 
-// Run servers
-container.get('ApiServer').run()
+// Run server
 container.get('ChatServer').run()
