@@ -21,7 +21,18 @@ class BaseController {
         text,
       }
     )
+  }
 
+  sendBroadcastMessage(server, text, excludedConnections = []) {
+    server.sendBroadcastMessage(
+      {
+        type: MESSAGE_TYPE_TEXT,
+        userId: -1,
+        userName: 'System',
+        text,
+      },
+      excludedConnections
+    )
   }
 }
 

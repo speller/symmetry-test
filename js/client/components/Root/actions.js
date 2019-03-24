@@ -27,11 +27,10 @@ export function startLogin(login, password, context, ws) {
   }
 }
 
-export function sendMessage(text, userId, ws) {
+export function sendMessage(text, ws) {
   return {
     type: ACTION_SEND_MESSAGE,
     payload: {
-      userId,
       text,
     },
     ws,

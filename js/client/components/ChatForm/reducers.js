@@ -2,7 +2,7 @@ import {
   ACTION_SEND_MESSAGE,
   ACTION_SEND_MESSAGE_FAIL,
   ACTION_SEND_MESSAGE_SUCCESS,
-} from './constants'
+} from '../Root/constants'
 
 export default function(state = {}, action) {
   switch (action.type) {

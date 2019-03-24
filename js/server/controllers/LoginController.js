@@ -47,13 +47,10 @@ class LoginController extends BaseController {
       return
     }
 
-    console.log(`${data.login} login requested`)
+    console.log(`Check login for: ${data.login}`)
 
     this.userProvider.findUserByLogin(data.login)
-      .then(result => {
-        const [rows] = result
-        const user = rows[0]
-
+      .then(user => {
         if (!user) {
           this.sendError(
             server,
@@ -61,6 +58,7 @@ class LoginController extends BaseController {
             MESSAGE_TYPE_LOGIN_FAIL,
             'User not found'
           )
+          console.log(`${data.login} not found`)
           return
         }
 
@@ -70,8 +68,11 @@ class LoginController extends BaseController {
             connectionId,
             'Invalid password'
           )
+          console.log('Invalid password')
+          return
         }
 
+        console.log('Login success')
         // Login success
         server.authenticateClient(connectionId, user.id)
         server.sendMessage(
@@ -85,10 +86,9 @@ class LoginController extends BaseController {
             },
           }
         )
-        this.sendMessageAsSystem(
+        this.sendBroadcastMessage(
           server,
-          connectionId,
-          `Welcome, ${user.name}`
+          `${user.name} has joined this chat`
         )
       })
       .catch(error => {
@@ -96,7 +96,7 @@ class LoginController extends BaseController {
           server,
           connectionId,
           MESSAGE_TYPE_LOGIN_FAIL,
-          error
+          error.message
         )
       })
   }

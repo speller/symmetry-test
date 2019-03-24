@@ -58,13 +58,18 @@ class Root extends Component {
     this.props.dispatchWsMessage(msg, this.props.chatContext)
   }
 
+  getWsRef() {
+    return this.webSocketRef.current
+  }
+
   handleLogin(login, password) {
     const props = this.props
-    props.startLogin(login, password, props.chatContext, this.webSocketRef.current)
+    props.startLogin(login, password, props.chatContext, this.getWsRef())
   }
 
   handleSendMessage(text) {
-
+    const props = this.props
+    props.sendTextMessage(text, this.getWsRef())
   }
   
   componentWillUnmount() {
@@ -147,8 +152,8 @@ export default connect(
         dispatch(logout()),
       dispatchWsMessage: (msg, ctx) =>
         dispatch(dispatchWsMessage(msg, ctx)),
-      sendTextMessage: (text, userId, ms) =>
-        dispatch(sendMessage(text, userId, ms)),
+      sendTextMessage: (text, ws) =>
+        dispatch(sendMessage(text, ws)),
     }
   },
 )(Root)

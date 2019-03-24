@@ -52,7 +52,6 @@ class WebSocketServer {
         userId: null,
         connectionId,
       })
-      ws.__connectionId = connectionId
 
       ws.on('message', message => {
         console.log('received: %s', message)
@@ -71,9 +70,9 @@ class WebSocketServer {
           })
         }
       })
-
       ws.on('close', ws => {
-        this.connections = this.connections.filter(con => con.connectionId !== ws.__connectionId)
+        console.log(`Client disconnected`)
+        this.connections = this.connections.filter(con => con.connectionId !== connectionId)
       })
 
       ws.send(JSON.stringify({
@@ -122,6 +121,51 @@ class WebSocketServer {
       data = {data: data}
     }
     con.ws.send(JSON.stringify(data))
+  }
+
+  /**
+   * Send message to all client connections.
+   * @param data
+   * @param excludeConnections
+   */
+  sendBroadcastMessage(data, excludeConnections = []) {
+    if (!isPlainObject(data)) {
+      data = {data: data}
+    }
+    data = JSON.stringify(data)
+
+    this.connections
+      .filter(connection => !!connection.userId)
+      .filter(connection => !excludeConnections.find(con => con.connectionId === connection.id))
+      .forEach(connection => {
+        connection.ws.send(data)
+      })
+  }
+
+  /**
+   * Send message to specified user id client connections.
+   * @param userId
+   * @param data
+   */
+  sendMessageToUserId(userId, data) {
+    if (!isPlainObject(data)) {
+      data = {data: data}
+    }
+    data = JSON.stringify(data)
+
+    this.connections
+      .filter(connection => connection.userId === userId)
+      .forEach(connection => connection.ws.send(data))
+  }
+
+  /**
+   * Returns user id assigned to the specified connection
+   * @param connectionId
+   * @returns {*}
+   */
+  getConnectionUserId(connectionId) {
+    const con = this.findConnection(connectionId)
+    return con ? con.userId : null
   }
 }
 
