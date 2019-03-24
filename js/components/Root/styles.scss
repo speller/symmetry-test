@@ -1,0 +1,35 @@
+.app-root {
+  .app-bar {
+    position: relative;
+    width: 100%;
+    display: flex;
+    z-index: 1100;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    flex-direction: column;
+  }
+  
+  .toolbar-title {
+    display: flex;
+    position: relative;
+    align-items: center;
+    
+    .title {
+      flex: 1;
+    }
+    
+    .main-link {
+      margin-right: 8px;
+    }
+    
+    .login {
+      margin-right: 8px;
+    }
+  }
+
+  .layout {
+    width: auto;
+    margin-left: 24px;
+    margin-right: 24px;
+  }
+} 

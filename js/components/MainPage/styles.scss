@@ -1,0 +1,13 @@
+.main-page {
+  .paper {
+    margin: 24px 0 48px;
+    overflow-x: auto;
+    
+    .table {
+      th,
+      td {
+        padding: 4px 8px;
+      }
+    }
+  }
+}
