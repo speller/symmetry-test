@@ -10,8 +10,10 @@ import {
   Typography,
 } from '@material-ui/core'
 import {
+  disconnected,
   dispatchWsMessage,
-  logout, sendMessage,
+  logout,
+  sendMessage,
   showLoginPage,
   startLogin,
 } from './actions'
@@ -34,6 +36,10 @@ class Root extends Component {
 
   webSocketRef
 
+  state = {
+    wsConnected: false,
+  }
+
   constructor(props) {
     super(props)
     this.webSocketRef = React.createRef()
@@ -47,7 +53,7 @@ class Root extends Component {
     return !!this.props.chatContext.user
   }
 
-  handleWsData(data) {
+  handleWsMessage(data) {
     console.log(data)
     let msg
     try {
@@ -58,6 +64,19 @@ class Root extends Component {
     this.props.dispatchWsMessage(msg, this.props.chatContext)
   }
 
+  handleWsClosed() {
+    this.setState({wsConnected: false})
+    this.props.disconnected(this.props.chatContext)
+  }
+
+  handleWsConnected() {
+    this.setState({wsConnected: true})
+  }
+
+  isWsConnected() {
+    return this.state.wsConnected
+  }
+
   getWsRef() {
     return this.webSocketRef.current
   }
@@ -65,6 +84,10 @@ class Root extends Component {
   handleLogin(login, password) {
     const props = this.props
     props.startLogin(login, password, props.chatContext, this.getWsRef())
+  }
+
+  handleLogout() {
+    this.props.logout(this.getWsRef())
   }
 
   handleSendMessage(text) {
@@ -81,6 +104,7 @@ class Root extends Component {
 
     const isInProgress = this.isInProgress()
     const isLoggedIn = this.isLoggedIn()
+    const isWsConnected = this.isWsConnected()
 
     return (
       <div className="app-root">
@@ -96,7 +120,7 @@ class Root extends Component {
               variant="outlined" 
               className="login" 
               onClick={props.showLoginPage}
-              disabled={isInProgress}
+              disabled={isInProgress || !isWsConnected}
             >
               Login
             </Button>}
@@ -104,8 +128,8 @@ class Root extends Component {
             <Button 
               color="primary" 
               variant="outlined" 
-              onClick={props.logout}
-              disabled={isInProgress}
+              onClick={this.handleLogout.bind(this)}
+              disabled={isInProgress || !isWsConnected}
             >
               {props.chatContext.user.name} Logout
             </Button>}
@@ -114,8 +138,12 @@ class Root extends Component {
         <Websocket
           ref={this.webSocketRef}
           url={config.client.ws_url}
-          onMessage={this.handleWsData.bind(this)}
+          onMessage={this.handleWsMessage.bind(this)}
+          onOpen={this.handleWsConnected.bind(this)}
+          onClose={this.handleWsClosed.bind(this)}
         />
+        {!isWsConnected &&
+        <Typography variant="body1" className="disconnected">No connection</Typography>}
         {isInProgress &&
         <LinearProgress />}
         <main className="layout">
@@ -148,12 +176,14 @@ export default connect(
         dispatch(startLogin(name, password, ctx, ws)),
       showLoginPage: () =>
         dispatch(showLoginPage()),
-      logout: () =>
-        dispatch(logout()),
+      logout: (ws) =>
+        dispatch(logout(ws)),
       dispatchWsMessage: (msg, ctx) =>
         dispatch(dispatchWsMessage(msg, ctx)),
       sendTextMessage: (text, ws) =>
         dispatch(sendMessage(text, ws)),
+      disconnected: (ctx) =>
+        dispatch(disconnected(ctx)),
     }
   },
 )(Root)

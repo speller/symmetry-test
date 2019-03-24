@@ -1,6 +1,9 @@
 import {
-  ACTION_DISPATCH_MESSAGE, ACTION_LOGIN,
-  ACTION_LOGOUT, ACTION_SEND_MESSAGE,
+  ACTION_DISPATCH_MESSAGE,
+  ACTION_LOGIN,
+  ACTION_LOGOUT,
+  ACTION_LOGOUT_SUCCESS,
+  ACTION_SEND_MESSAGE,
   ACTION_SET_PAGE,
   PAGE_LOGIN,
   PAGE_MAIN,
@@ -50,8 +53,16 @@ export function showMainPage() {
   }
 }
 
-export function logout() {
+export function logout(ws) {
   return {
     type: ACTION_LOGOUT,
+    ws,
+  }
+}
+
+export function disconnected(context) {
+  return {
+    type: ACTION_LOGOUT_SUCCESS,
+    context,
   }
 }

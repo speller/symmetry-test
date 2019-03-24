@@ -28,6 +28,7 @@ export default function(state = {}, action) {
   case ACTION_LOGIN_SUCCESS:
     const context1 = ChatContext.clone(action.context)
     context1.user = action.payload.user
+    context1.messages = []
     return {
       ...state,
       chatContext: context1,
@@ -48,8 +49,10 @@ export default function(state = {}, action) {
   case ACTION_LOGOUT_SUCCESS:
     const context2 = ChatContext.clone(action.context)
     context2.user = null
+    context2.messages = []
     return {
       ...state,
+      logoutInProgress: false,
       chatContext: context2,
     }
 

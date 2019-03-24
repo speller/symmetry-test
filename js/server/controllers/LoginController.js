@@ -1,7 +1,7 @@
 import isPlainObject from 'lodash-es/isPlainObject'
 import {
   MESSAGE_TYPE_LOGIN_FAIL,
-  MESSAGE_TYPE_LOGIN_SUCCESS,
+  MESSAGE_TYPE_LOGIN_SUCCESS, MESSAGE_TYPE_LOGOUT_SUCCESS,
 } from '../../common/constants'
 import BaseController from './BaseController'
 
@@ -98,6 +98,34 @@ class LoginController extends BaseController {
           MESSAGE_TYPE_LOGIN_FAIL,
           error.message
         )
+      })
+  }
+
+  /**
+   * Handle user logout
+   * @param request
+   */
+  logoutAction(request) {
+    const { connectionId, server } = request
+    console.log('Logout request')
+
+    const userId = server.getConnectionUserId(connectionId)
+    server.authenticateClient(connectionId, null)
+    server.sendMessage(
+      connectionId,
+      {
+        type: MESSAGE_TYPE_LOGOUT_SUCCESS,
+      }
+    )
+
+    this.userProvider.findUserById(userId)
+      .then(user => {
+        if (user) {
+          this.sendBroadcastMessage(
+            server,
+            `${user.name} has left this chat`
+          )
+        }
       })
   }
 }

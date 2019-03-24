@@ -27,6 +27,15 @@
     }
   }
 
+  .disconnected {
+    border: 1px solid red;
+    border-radius: 4px;
+    padding: 4px;
+    margin: 8px auto 0;
+    width: 150px;
+    text-align: center;
+  }
+
   .layout {
     width: auto;
     margin-left: 24px;

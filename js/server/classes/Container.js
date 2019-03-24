@@ -2,9 +2,7 @@ import MessageController from '../controllers/MessageController'
 import SqlMessageProvider from './SqlMessageProvider'
 import isFunction from 'lodash-es/isFunction'
 import ChatRouter from './ChatRouter'
-import ApiRouter from './ApiRouter'
 import WebSocketServer from './WebSocketServer'
-import ApiServer from './ApiServer'
 import SqlUserProvider from './SqlUserProvider'
 import MySQL from './MySQL'
 import LoginController from '../controllers/LoginController'
@@ -60,7 +58,7 @@ class Container {
     return this.parameters[name]
   }
 
-  // Part below is simplified result from what compiled service containers usually are.
+  // Part below is the simplified result from what compiled service containers usually are.
 
   getMessageProvider() {
     return new SqlMessageProvider(
@@ -91,21 +89,10 @@ class Container {
     return new ChatRouter(this)
   }
 
-  getApiRouter() {
-    return new ApiRouter(this)
-  }
-
   getChatServer() {
     return new WebSocketServer(
       this.getParameter('chat_config'),
       this.get('ChatRouter')
-    )
-  }
-
-  getApiServer() {
-    return new ApiServer(
-      this.getParameter('api_config'),
-      this.get('ApiRouter')
     )
   }
 
