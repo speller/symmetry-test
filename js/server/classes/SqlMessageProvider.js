@@ -40,9 +40,30 @@ class SqlMessageProvider extends BaseProvider{
    */
   async findMessageById(id) {
     const [rows] = await this.connection.query(
-      'SELECT * FROM messages WHERE id = ?', [id]
+      'SELECT m.*, u.name AS user_name ' +
+      'FROM messages m ' +
+      'JOIN users u ON m.user_id = u.id ' +
+      'WHERE m.id = ?',
+      [id]
     )
     return rows[0] ? rows[0] : null
+  }
+
+  /**
+   * Returns last messages
+   * @param count
+   * @returns {Promise<null>}
+   */
+  async getLastMessages(count) {
+    const [rows] = await this.connection.query(
+      'SELECT m.*, u.name AS user_name ' +
+      'FROM messages m ' +
+      'JOIN users u ON m.user_id = u.id ' +
+      'ORDER BY m.timestamp DESC, m.id DESC ' +
+      'LIMIT ?', [count]
+    )
+    console.log(rows)
+    return rows.reverse()
   }
 }
 export default SqlMessageProvider

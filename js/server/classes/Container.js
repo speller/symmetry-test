@@ -98,7 +98,8 @@ class Container {
 
   getLoginController() {
     return new LoginController(
-      this.get('UserProvider')
+      this.get('UserProvider'),
+      this.get('MessageProvider'),
     )
   }
 }
