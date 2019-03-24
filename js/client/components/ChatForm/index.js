@@ -40,11 +40,15 @@ class ChatForm extends Component {
     }
   }
 
+  clearInputText() {
+    this.setState({text: ''})
+  }
+
   componentDidUpdate(prevProps, prevState, snapshot) {
     const props = this.props
     // Reset text on successful message sent
     if (!props.inProgress && prevProps.inProgress && props.messageSentSuccess) {
-      this.setState({text: ''})
+      this.clearInputText()
     }
   }
 
@@ -76,7 +80,7 @@ class ChatForm extends Component {
             className="text"
             autoComplete="Message Text"
             autoFocus
-            disabled={inProgress || !isLoggedIn}
+            disabled={inProgress}
             value={this.state.text}
             onChange={(e) => this.setState({text: e.target.value})}
             onKeyDown={this.handleTextKeyDown.bind(this)}
@@ -86,7 +90,7 @@ class ChatForm extends Component {
             variant="contained"
             color="primary"
             className="submit"
-            disabled={inProgress || !isLoggedIn}
+            disabled={inProgress}
             onClick={this.sendTextMessage.bind(this)}
           >
             <FontAwesomeIcon icon="paper-plane" />
@@ -110,4 +114,8 @@ export default connect(
     return {
     }
   },
+  null,
+  {
+    forwardRef : true,
+  }
 )(ChatForm)

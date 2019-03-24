@@ -36,14 +36,17 @@ class Root extends Component {
   }
 
   webSocketRef
+  chatFormRef
 
   state = {
     wsConnected: false,
+    wsShouldConnect: false,
   }
 
   constructor(props) {
     super(props)
     this.webSocketRef = React.createRef()
+    this.chatFormRef = React.createRef()
   }
 
   isInProgress() {
@@ -78,6 +81,10 @@ class Root extends Component {
     return this.state.wsConnected
   }
 
+  shouldWsConnect() {
+    return this.state.wsShouldConnect
+  }
+
   getWsRef() {
     return this.webSocketRef.current
   }
@@ -92,10 +99,29 @@ class Root extends Component {
   }
 
   handleSendMessage(text) {
-    const props = this.props
-    props.sendTextMessage(text, this.getWsRef())
+    if (!this.isWsConnected() && !this.shouldWsConnect()) {
+      if (text === '/join') {
+        this.setState({wsShouldConnect: true})
+        this.clearInputText()
+      }
+    } else {
+      if (text === '/leave') {
+        this.setState({wsShouldConnect: false})
+        this.clearInputText()
+      } else if (this.isLoggedIn()) {
+        const props = this.props
+        props.sendTextMessage(text, this.getWsRef())
+      }
+    }
   }
   
+  clearInputText() {
+    const ref = this.chatFormRef.current
+    if (ref) {
+      ref.clearInputText()
+    }
+  }
+
   handleDeleteMessage(msgId) {
     const props = this.props
     props.deleteMessage(msgId, this.getWsRef(), props.chatContext)
@@ -111,6 +137,7 @@ class Root extends Component {
     const isInProgress = this.isInProgress()
     const isLoggedIn = this.isLoggedIn()
     const isWsConnected = this.isWsConnected()
+    const shouldWsConnect = this.shouldWsConnect()
 
     return (
       <div className="app-root">
@@ -120,20 +147,38 @@ class Root extends Component {
             <Typography variant="h6" color="inherit" noWrap className="title">
               Test Chat
             </Typography>
-            {!isLoggedIn &&
+            {shouldWsConnect &&
             <Button 
               color="primary" 
               variant="outlined" 
-              className="login" 
+              onClick={() => this.setState({wsShouldConnect: false})}
+              disabled={isInProgress}
+            >
+              Disconnect
+            </Button>}
+            {!shouldWsConnect &&
+            <Button 
+              color="primary" 
+              variant="outlined" 
+              onClick={() => this.setState({wsShouldConnect: true})}
+              disabled={isInProgress}
+            >
+              Connect
+            </Button>}
+            {!isLoggedIn &&
+            <Button
+              color="primary"
+              variant="outlined"
+              className="login"
               onClick={props.showLoginPage}
               disabled={isInProgress || !isWsConnected}
             >
               Login
             </Button>}
             {isLoggedIn &&
-            <Button 
-              color="primary" 
-              variant="outlined" 
+            <Button
+              color="primary"
+              variant="outlined"
               onClick={this.handleLogout.bind(this)}
               disabled={isInProgress || !isWsConnected}
             >
@@ -141,13 +186,15 @@ class Root extends Component {
             </Button>}
           </Toolbar>
         </AppBar>
+        {this.state.wsShouldConnect &&
         <Websocket
           ref={this.webSocketRef}
           url={config.client.ws_url}
+          reconnectIntervalInMilliSeconds={2000}
           onMessage={this.handleWsMessage.bind(this)}
           onOpen={this.handleWsConnected.bind(this)}
           onClose={this.handleWsClosed.bind(this)}
-        />
+        />}
         {!isWsConnected &&
         <Typography variant="body1" className="disconnected">No connection</Typography>}
         {isInProgress &&
@@ -158,6 +205,7 @@ class Root extends Component {
           }
           {props.page === PAGE_MAIN &&
             <ChatForm
+              ref={this.chatFormRef}
               chatContext={props.chatContext}
               sendMessageProc={this.handleSendMessage.bind(this)}
               deleteMessageProc={this.handleDeleteMessage.bind(this)}
