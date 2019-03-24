@@ -18,7 +18,7 @@ export default function(state = {}, action) {
   case ACTION_LOGIN_SUCCESS:
     return {
       ...state,
-      currentLogin: action.payload,
+      currentUser: action.payload,
     }
 
   case ACTION_LOGIN_FAIL:
@@ -37,7 +37,7 @@ export default function(state = {}, action) {
     return {
       ...state,
       logoutInProgress: false,
-      currentLogin: null,
+      currentUser: null,
     }
 
   case ACTION_LOGOUT_FAIL:

@@ -1,6 +1,7 @@
 {
   "client": {
-    "ws_url": "ws://localhost:12345"
+    "ws_url": "ws://localhost:12345",
+    "api_url": "http://localhost:1234"
   },
   "server": {
     "ws_host": "0.0.0.0",

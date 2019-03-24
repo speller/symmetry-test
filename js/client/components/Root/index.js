@@ -21,7 +21,7 @@ class Root extends Component {
   
   static defaultProps = {
     page: PAGE_MAIN,
-    currentLogin: null,
+    currentUser: null,
     initialized: false,
     logoutInProgress: false,
   }
@@ -30,14 +30,23 @@ class Root extends Component {
     return this.props.logoutInProgress
   }
 
+  isLoggedIn() {
+    return !!this.props.currentUser
+  }
+
   handleWsData(data) {
     console.log(data)
+    try {
+      const req = JSON.parse(data)
+    } catch (e) {
+      // Do nothing on unknown message format
+    }
     // let result = JSON.parse(data)
     // this.setState({ count: this.state.count + result.movement })
   }
   
   componentDidMount() {
-    if (!this.currentLogin && !this.isInProgress()) {
+    if (!this.currentUser && !this.isInProgress()) {
       this.props.showLoginPage()
     }
   }
@@ -45,8 +54,8 @@ class Root extends Component {
   render() {
     const props = this.props
     
-    const isInProgress = this.isInProgress() || props.shouldCheckLogin
-    const isLoggedIn = !!props.currentLogin
+    const isInProgress = this.isInProgress()
+    const isLoggedIn = this.isLoggedIn()
 
     return (
       <div className="app-root">
@@ -54,7 +63,7 @@ class Root extends Component {
         <AppBar position="static" color="default" className="app-bar">
           <Toolbar className="toolbar-title">
             <Typography variant="h6" color="inherit" noWrap className="title">
-              Test Assignment Chat
+              Test Chat
             </Typography>
             {!isLoggedIn &&
             <Button 
@@ -73,7 +82,7 @@ class Root extends Component {
               onClick={props.logout}
               disabled={isInProgress}
             >
-              {props.currentLogin} Logout
+              {props.currentUser.name} Logout
             </Button>}
           </Toolbar>
         </AppBar>
@@ -87,10 +96,11 @@ class Root extends Component {
             <MainPage />
           }
         </main>
+        {isLoggedIn &&
         <Websocket 
           url={config.client.ws_url}
           onMessage={this.handleWsData.bind(this)}
-        />
+        />}
       </div>
     )
   }

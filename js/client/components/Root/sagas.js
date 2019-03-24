@@ -1,40 +1,38 @@
-import { delay, call, put, takeLatest } from 'redux-saga/dist/redux-saga-effects-npm-proxy.esm'
+import { delay, call, put, takeLatest } from 'redux-saga/effects'
 import {
   ACTION_LOGIN,
   ACTION_LOGIN_FAIL,
   ACTION_LOGIN_SUCCESS,
   ACTION_LOGOUT,
-  ACTION_LOGOUT_FAIL,
   ACTION_LOGOUT_SUCCESS,
-  BASE_URL,
 } from './constants'
+import axios from 'axios'
 import { putFailAction } from './utils'
 import config from '../../../config'
 
-
 function * loginWorker(action) {
-  const name = action.payload.name
-  const password = action.payload.password
-
-  let user
-  const users = config.users
-
-  for (const record of users) {
-    if (record.name === name && record.password === password) {
-      user = {...record}
+  try {
+    const response = yield call(
+      axios,
+      {
+        url: '/login',
+        baseURL: config.client.api_url,
+        method: 'post',
+        data: {...action.payload},
+        withCredentials: true,
+      }
+    )
+    const result = response.data
+    if (result && result.success) {
+      yield put({
+        type: ACTION_LOGIN_SUCCESS,
+        payload: result.user,
+      })
+    } else {
+      yield putFailAction(ACTION_LOGIN_FAIL, {message: result.reason ?? 'unknown error'})
     }
-  }
-
-  // Add delay to mimic like API call
-  yield delay(500)
-
-  if (user) {
-    yield put({
-      type: ACTION_LOGIN_SUCCESS,
-      payload: user.name,
-    })
-  } else {
-    yield putFailAction(ACTION_LOGIN_FAIL, { message: 'User not found' })
+  } catch (e) {
+    yield putFailAction(ACTION_LOGIN_FAIL, e)
   }
 }
 

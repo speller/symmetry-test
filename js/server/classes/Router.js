@@ -56,16 +56,22 @@ class Router {
 
   handleRoute(callback, request, response) {
     const responseCtx = {
-      send: (data) => {
-        response.writeHead(200, {
-          'Content-type': 'application/json',
-        })
-        if (!isPlainObject(data)) {
-          data = {
-            data: data,
+      send: (data, headers) => {
+        if (data !== null) {
+          if (!isPlainObject(data)) {
+            data = {
+              data: data,
+            }
           }
+          const defaultHeaders = {
+            'Content-Type': 'application/json',
+          }
+          response.writeHead(200, {...defaultHeaders, ...headers})
+          response.write(JSON.stringify(data))
+        } else {
+          response.writeHead(200, {...headers})
+          response.write('')
         }
-        response.write(JSON.stringify(data))
         response.end()
       },
     }
@@ -82,6 +88,13 @@ class Router {
   post(url, callback) {
     this.routes.push({
       pattern: `POST:${url}`,
+      callback: callback,
+    })
+  }
+
+  options(url, callback) {
+    this.routes.push({
+      pattern: `OPTIONS:${url}`,
       callback: callback,
     })
   }

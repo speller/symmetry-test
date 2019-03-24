@@ -30,6 +30,7 @@ const apiServer = new ApiServer(
 
 router.get('/', DefaultController.default)
 router.post('/login', LoginController.login)
+router.options('/login', LoginController.loginOptions)
 
 // Run servers
 

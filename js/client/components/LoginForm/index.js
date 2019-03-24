@@ -2,9 +2,18 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import './styles.scss'
-import { Avatar, Button, FormControl, Input, InputLabel, LinearProgress, Paper, Typography } from '@material-ui/core'
+import {
+  Avatar,
+  Button,
+  FormControl,
+  Input,
+  InputLabel,
+  LinearProgress,
+  Paper,
+  Typography,
+} from '@material-ui/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { goToMainPage, startLogin, startRegister } from './actions'
+import { goToMainPage, startLogin } from './actions'
 
 class LoginForm extends Component {
 
