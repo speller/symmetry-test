@@ -2,18 +2,23 @@ import WebSocket from 'ws'
 
 class WebSocketServer {
 
-  commandProcessor = null
-  portNumber = null
+  commandProcessor
+  config
 
-  constructor(commandProcessor, portNumber) {
+  constructor(config, commandProcessor) {
+    this.config = config
     this.commandProcessor = commandProcessor
-    this.portNumber = portNumber
   }
 
   run() {
+    const cfg = this.config
+    const port = cfg.port || 12345
+    const host = cfg.host || '0.0.0.0'
+
     const wss = new WebSocket.Server(
       {
-        port: this.portNumber,
+        port: port,
+        host: host,
         perMessageDeflate: {
           zlibDeflateOptions: {
             chunkSize: 1024,
@@ -31,7 +36,7 @@ class WebSocketServer {
         },
       },
       () => {
-        console.log(`Listening on port ${this.portNumber}`)
+        console.log(`WebSocket server is listening on ${host}:${port}`)
       }
     )
 
@@ -50,7 +55,7 @@ class WebSocketServer {
           ws.send(JSON.stringify(response))
         }
       })
-      ws.send('connected')
+      ws.send('Hello WebSocket client!')
     })
   }
 }

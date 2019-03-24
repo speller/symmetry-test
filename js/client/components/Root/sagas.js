@@ -1,4 +1,4 @@
-import { delay, call, put, takeLatest } from 'redux-saga/effects'
+import { delay, call, put, takeLatest } from 'redux-saga/dist/redux-saga-effects-npm-proxy.esm'
 import {
   ACTION_LOGIN,
   ACTION_LOGIN_FAIL,
@@ -9,7 +9,7 @@ import {
   BASE_URL,
 } from './constants'
 import { putFailAction } from './utils'
-import config from '../../config'
+import config from '../../../config'
 
 
 function * loginWorker(action) {

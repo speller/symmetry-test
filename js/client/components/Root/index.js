@@ -15,7 +15,7 @@ import { PAGE_LOGIN, PAGE_MAIN } from './constants'
 import { logout, showLoginPage } from './actions'
 import MainPage from '../MainPage'
 import Websocket from 'react-websocket'
-import config from '../../config'
+import config from '../../../config'
 
 class Root extends Component {
   
@@ -88,7 +88,7 @@ class Root extends Component {
           }
         </main>
         <Websocket 
-          url={config.ws_url}
+          url={config.client.ws_url}
           onMessage={this.handleWsData.bind(this)}
         />
       </div>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import Paper from '@material-ui/core/Paper'
+import Paper from '@material-ui/core/Paper/index'
 import { loadData } from './actions'
 import './styles.scss'
 import LinearProgress from '@material-ui/core/LinearProgress'

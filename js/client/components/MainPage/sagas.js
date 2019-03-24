@@ -1,5 +1,5 @@
-import { call, put, takeLatest } from 'redux-saga/effects'
-import axios from 'axios'
+import { call, put, takeLatest } from 'redux-saga/dist/redux-saga-effects-npm-proxy.esm'
+import axios from 'axios/index'
 import { putFailAction } from '../Root/utils'
 import { ACTION_LOAD_DATA, ACTION_LOAD_DATA_FAIL, ACTION_LOAD_DATA_SUCCESS } from './constants'
 import { BASE_URL } from '../Root/constants'

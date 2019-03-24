@@ -1,4 +1,4 @@
-import config from '../../config'
+import config from '../../../config'
 
 export const PAGE_LOGIN = 'login'
 export const PAGE_MAIN = 'main'
