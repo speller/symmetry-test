@@ -4,6 +4,7 @@ import {
   MESSAGE_TYPE_LOGIN_SUCCESS, MESSAGE_TYPE_LOGOUT_SUCCESS, MESSAGE_TYPE_TEXT,
 } from '../../common/constants'
 import BaseController from './BaseController'
+import { getColorByUserId } from '../utils'
 
 /**
  * Login controller
@@ -26,25 +27,25 @@ class LoginController extends BaseController {
     const { data, connectionId, server } = request
     console.log('Log in request')
 
-    if (!isPlainObject(data)) {
-      server.sendMessage(
+    const sendErrorMessage = text => {
+      this.sendError(
+        server,
         connectionId,
-        { error: 'Invalid input data' }
+        MESSAGE_TYPE_LOGIN_FAIL,
+        text
       )
+    }
+
+    if (!isPlainObject(data)) {
+      sendErrorMessage('Invalid input data')
       return
     }
     if (!data.login) {
-      server.sendMessage(
-        connectionId,
-        { error: 'Login not specified' }
-      )
+      sendErrorMessage('Login not specified')
       return
     }
     if (!data.password) {
-      server.sendMessage(
-        connectionId,
-        { error: 'Password not specified' }
-      )
+      sendErrorMessage('Password is not specified')
       return
     }
 
@@ -54,33 +55,19 @@ class LoginController extends BaseController {
     try {
       user = await this.userProvider.findUserByLogin(data.login)
     } catch (e) {
-      this.sendError(
-        server,
-        connectionId,
-        MESSAGE_TYPE_LOGIN_FAIL,
-        e.message
-      )
+      sendErrorMessage(e.message)
       console.log(`${data.login} db failed`)
       return
     }
 
     if (!user) {
-      this.sendError(
-        server,
-        connectionId,
-        MESSAGE_TYPE_LOGIN_FAIL,
-        'User not found'
-      )
+      sendErrorMessage('User not found')
       console.log(`${data.login} not found`)
       return
     }
 
     if (user.password !== data.password) {
-      this.sendError(
-        server,
-        connectionId,
-        'Invalid password'
-      )
+      sendErrorMessage('Invalid password')
       console.log('Invalid password')
       return
     }
@@ -119,6 +106,7 @@ class LoginController extends BaseController {
           text: message.text,
           time: message.timestamp,
           messageId: message.id,
+          userColor: getColorByUserId(message.user_id),
         }
       )
     }

@@ -48,8 +48,21 @@ class Message extends Component {
     return (
       <Paper className="message">
         <div className="header">
-          <Typography className="author" variant="caption" gutterBottom>{msg.userName ?? 'Unknown'}</Typography>
-          <Typography className="time" variant="caption" gutterBottom>{time ? formatDate(time, 'Y-m-d H:i:s') : ''}</Typography>
+          <Typography
+            className="author"
+            variant="caption"
+            style={{color: msg.userColor}}
+            gutterBottom
+          >
+            {msg.userName ?? 'Unknown'}
+          </Typography>
+          <Typography
+            className="time"
+            variant="caption"
+            gutterBottom
+          >
+            {time ? formatDate(time, 'Y-m-d H:i:s') : ''}
+          </Typography>
           {props.canDelete &&
           <Button
             className="delete"
